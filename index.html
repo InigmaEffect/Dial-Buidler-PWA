@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Dial Studio V4.7</title>
-<link rel="manifest" href="manifest.json">
+<title>Dial Studio V4.9.1</title>
+<meta name="theme-color" content="#000000"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dial Studio">
+<link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -155,6 +156,11 @@ dialog.cal{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;border:0}
 .fpt{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 14px;cursor:move;touch-action:none;background:var(--hv);border-bottom:1px solid var(--ln);user-select:none}.fpt b{font-size:13px}.fpt small{color:var(--mut);flex:1;font-size:11px}
 .fpf{display:flex;align-items:center;gap:8px;padding:8px 10px;border-top:1px solid var(--ln);background:var(--pn)}.fpf small{flex:1;color:var(--mut);font-size:11px}
 #fl .pv{font-size:20px}
+#gd{position:absolute;inset:0;pointer-events:none;z-index:2}html body #stage #gd svg{background:transparent!important;width:100%;height:100%;display:block}
+#zb .vk.on{background:#ff2d3a!important;border-color:#ff2d3a!important;color:#fff!important}
+#pvb{display:none;position:absolute;left:8px;right:8px;bottom:8px;z-index:7;gap:6px;align-items:center;background:rgba(0,0,0,.78);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding:6px;border-radius:12px;color:#fff;font-size:12px}#pvb span{flex:1;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#pvb button{min-width:34px;height:32px;padding:0 10px}
+#stage.pvw #pvb{display:flex}#stage.pvw #gz,#stage.pvw #zb .vk.on{background:#ff2d3a!important;border-color:#ff2d3a!important;color:#fff!important}
+.cpn{display:flex;gap:6px;margin-left:auto}.cp.pvw{outline:2px solid #ff2d3a;outline-offset:1px}
 </style><style id="ui2">:root:root:root:root{--bg:#000;--pn:#000;--fg:#e4e4e4;--mut:#858585;--ln:#2a2a2a;--acc:#e5141c;--hv:#1a1a1a;--gl:#0a0a0a;--sh:none;--mh:262px;color-scheme:dark}
 html,body{background:#000!important;height:100%}
 body{font:12px/1.35 'Segoe UI',system-ui,-apple-system,Roboto,sans-serif!important;letter-spacing:0!important;overflow:hidden;display:flex!important;flex-direction:column}
@@ -487,19 +493,20 @@ html body.mob #ited{padding:4px 0 8px!important}
 <div id="right">
 <section id="pv" class="card"><div id="stage"></div><div id="zb"><button id="zo" aria-label="Zoom out">−</button><button id="zf">Fit</button><button id="zi" aria-label="Zoom in">+</button><button id="zas" title="Actual size (1:1)">1:1</button><button class="ic" id="zcal" title="Calibrate screen" aria-label="Calibrate screen">⌖</button><span class="chip" id="fz" hidden></span></div><div id="info"></div>
 <div class="bar"><button class="ic un" title="Undo (Ctrl+Z)" aria-label="Undo">↶</button><button class="ic re" title="Redo (Ctrl+Shift+Z)" aria-label="Redo">↷</button><button class="p" id="dl">Download SVG</button><button id="cp">Copy SVG</button><button id="cpe" title="Copy only the dial elements: no centre hole, outer border or canvas">Copy elements</button></div></section>
-<section id="cpw" class="card"><div class="ch"><h4>Checkpoints</h4><span class="chip" id="st"></span></div><div class="strip" id="cps"></div></section>
+<section id="cpw" class="card"><div class="ch"><h4>Checkpoints</h4><span class="chip" id="st"></span><div class="cpn"><button class="ic" id="cpl" aria-label="Previous checkpoint" title="Previous checkpoint (←)">‹</button><button class="ic" id="cpr" aria-label="Next checkpoint" title="Next checkpoint (→)">›</button></div></div><div class="strip" id="cps"></div></section>
 </div></main>
 <div id="menu" hidden></div><dialog id="dg"></dialog>
 <dialog id="shd"><div class="in"><h3>Share &amp; backup</h3><p class="m">Copy a text code, then paste it into WhatsApp, notes, or another copy of this app.</p>
 <div class="opts"><button data-k="S"><b>Current settings</b><small>Everything on screen right now</small></button><button data-k="V"><b>This version</b><small>With all its checkpoints</small></button><button data-k="D"><b>This dial</b><small>All versions &amp; checkpoints</small></button><button data-k="P"><b>Everything</b><small>All dials in the app</small></button></div>
 <textarea id="pout" readonly hidden aria-label="Generated code"></textarea>
+<hr><h4>Move everything to another device</h4><p class="m">One file with all dials, checkpoints and the fonts they use. Send it to your phone (share sheet, AirDrop, cloud drive, email) and import it there.</p><label class="m"><input type="checkbox" id="bkall"> include every font in my library (bigger file)</label><div class="row"><button id="bkx">Export backup file</button><button id="bki">Import backup file</button><input type="file" id="bkf" accept=".dialstudio,.json" hidden></div><div class="m" id="bkinfo"></div>
 <hr><h4>Load a code</h4><textarea id="pin" placeholder="Paste a code here…"></textarea><div class="m" id="pinfo"></div>
 <div class="row"><button id="shx">Close</button><button id="ppaste">Paste from clipboard</button></div><div class="row" id="pact" style="margin-top:8px"></div>
 <p class="m">Font files are too big for codes, but every look remembers which font it uses. Add the same font file on the other device and it links up automatically.</p></div></dialog>
 <div id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/opentype.js@2.0.0/dist/opentype.min.js"></script>
-<script>
+<script type="text/plain" id="app1">
 const PI=Math.PI,TAU=PI*2,$=s=>document.querySelector(s);
 const STY=['Numbers','Roman','Markers','Diver','Flieger','Markers + Subdivisions','Panerai','KonTiki','California','Minute Numerals','Cartouche','None'];
 // ---- schema: [id,label,type(l=length,n=number,a=angle°,b=bool,s=text,c=color,sel),default,options]
@@ -656,10 +663,10 @@ let tm;const sched=()=>{cancelAnimationFrame(tm);tm=requestAnimationFrame(render
 function numField(f,L,span){const[id,lab,ty,def]=f,len=ty=='l',an=ty=='a';
 const iv=v=>len?v*U.v:an?v*PI/180:v;S[id]=iv(def);
 let mn,mx;if(an){mn=-180;mx=180}else if(id=='count'){mn=1;mx=240}else if(id=='weight'){mn=0;mx=.27}else if(id=='dw'){mn=0;mx=12}else if(def==0||/off|xo|yo|Step|tipx/.test(id)){mx=Math.max(Math.abs(def)*3,len?(/^(lx|ly|cw|ch)$/.test(id)?60:10):5);mn=-mx}else{mn=0;mx=Math.max(def*3,1)}
-const sl=document.createElement('input');sl.type='range';sl.min=mn;sl.max=mx;sl.step='any';sl.value=def;
+const sl=document.createElement('input');sl.type='range';sl.min=mn;sl.max=mx;sl.step='any';sl.value=def;const INT=/^(dw|count|minCount|tres)$/.test(id);if(INT)sl.step=1;
 const ni=document.createElement('input');ni.type='text';ni.inputMode='decimal';ni.value=def;
-const stp=()=>id=='count'?1:id=='weight'?.01/FZ():(len?.1/U.v:an?1:.05)/FZ();
-const apply=(v,src)=>{if(isNaN(v))return;S[id]=iv(v);if(v>+sl.max)sl.max=Math.ceil(v*125)/100;if(v<+sl.min)sl.min=v<0?Math.floor(v*125)/100:0;sl.value=v;if(src!='n')ni.value=+v.toFixed(4);sched()};
+const stp=()=>INT?1:id=='count'?1:id=='weight'?.01/FZ():(len?.1/U.v:an?1:.05)/FZ();
+const apply=(v,src)=>{if(isNaN(v))return;if(INT)v=Math.round(v);S[id]=iv(v);if(v>+sl.max)sl.max=Math.ceil(v*125)/100;if(v<+sl.min)sl.min=v<0?Math.floor(v*125)/100:0;sl.value=v;if(src!='n'||INT)ni.value=+v.toFixed(4);sched()};
 const bump=d=>apply(+((parseFloat(ni.value)||0)+d*stp()).toFixed(4),'b');
 sl.oninput=()=>apply(+sl.value,'s');ni.oninput=()=>apply(parseFloat(ni.value),'n');
 ni.onkeydown=e=>{if(e.key=='ArrowUp'||e.key=='ArrowDown'){e.preventDefault();bump(e.key=='ArrowUp'?1:-1)}};
@@ -748,7 +755,11 @@ function reV(v){const m={},cps=(v.cps||[]).filter(c=>c&&c.sn&&c.sn.s).map(c=>{co
 return{id:uid(),name:String(v.name||'Version'),work:v.work&&v.work.s?v.work:{s:{}},cps,base:m[v.base]||null,fs:v.fs=='version'?'version':'look',fonts:v.fs=='version'?v.fonts:undefined}}
 function reD(d){const vs=(d.vs||[]).map(reV);if(!vs.length)vs.push(mkV('Version 1',{s:{}}));const i=(d.vs||[]).findIndex(v=>v.id==d.cur);return{id:uid(),name:String(d.name||'Dial'),vs,cur:vs[Math.max(0,i)].id,fonts:d.fonts}}
 const nm=(a,b)=>{let n=1;while(a.some(x=>x.name==b+' '+n))n++;return b+' '+n};
-function persist(){clearTimeout(persist.t);persist.t=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(PRJ))}catch(e){if(!warned++)toast('Auto-save unavailable here — use Share & backup to keep your work')}},400)}
+let LSOFF=0;
+function saveNow(){if(window.__NOSAVE||!PRJ)return Promise.resolve(0);PRJ.saved=Date.now();let ok=0;if(!LSOFF)try{localStorage.setItem(KEY,JSON.stringify(PRJ));ok=1}catch(e){LSOFF=1;try{localStorage.removeItem(KEY)}catch(x){}}
+return KV.set('prj',PRJ).then(()=>1,()=>ok).then(k=>{if(!k&&!warned++)toast('Auto-save unavailable here — use Share & backup to keep your work');return k})}
+function persist(){clearTimeout(persist.t);persist.t=setTimeout(saveNow,400)}
+addEventListener('pagehide',()=>{saveNow()});document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
 function onChange(){if(!PRJ)return;if(ONE)relock();if(EDIT){const L=LAY.find(l=>l.id==EDIT);if(L)L.s=lyDiff()}const v=VV(),sc=v.fs||'look';if(sc=='version')v.fonts={...CUR};else if(sc=='dial')DD().fonts={...CUR};else if(sc=='all')PRJ.fonts={...CUR};v.work=snap();persist();stat();histQueue();hbtn()}
 function go(){hsv(VV());loadSn(VV().work);paint()}
 const ago=t=>{const s=(Date.now()-t)/1e3;return s<60?'just now':s<3600?(s/60|0)+'m ago':s<86400?(s/3600|0)+'h ago':new Date(t).toLocaleDateString()};
@@ -822,6 +833,8 @@ catch(x){inf.textContent='That doesn’t look like a Dial Studio code.'}};
 $('#ppaste').onclick=()=>navigator.clipboard.readText().then(t=>{$('#pin').value=t;$('#pin').dispatchEvent(new Event('input'))}).catch(()=>toast('Paste blocked — long-press the box and paste'));
 // ---- start
 try{PRJ=JSON.parse(localStorage.getItem(KEY))}catch(e){PRJ=null}
+try{const q=window.__IDBPRJ;if(q&&Array.isArray(q.dials)&&(!PRJ||(q.saved||0)>=(PRJ.saved||0)))PRJ=q}catch(e){}
+const LOADED=!!(PRJ&&Array.isArray(PRJ.dials)&&PRJ.dials.length);
 if(!PRJ||!Array.isArray(PRJ.dials)||!PRJ.dials.length||!PRJ.dials.every(d=>d&&Array.isArray(d.vs)&&d.vs.length&&d.vs.every(v=>v&&v.work&&Array.isArray(v.cps)))){const d=mkD('Dial 1',snap());PRJ={cur:d.id,dials:[d]}}
 if(!PRJ.dials.some(d=>d.id==PRJ.cur))PRJ.cur=PRJ.dials[0].id;PRJ.dials.forEach(d=>{if(!d.vs.some(v=>v.id==d.cur))d.cur=d.vs[0].id});
 
@@ -905,7 +918,7 @@ const lyTag=()=>EDIT?' · editing '+((Lx(EDIT)||{}).name||'layer'):'';
 function withS(o,fn){const a={...S};try{Object.assign(S,o);return fn()}finally{Object.assign(S,a)}}
 const f3x=v=>+(+v).toFixed(3);
 function textFace(i){if(!i.font)return fH();const base=LIB.find(f=>f.id==i.font);if(!base)return FC[i.font]||fH();const root=n=>String(n||'').toLowerCase().replace(/[-_ ]?(thin|extra.?light|light|regular|normal|medium|semi.?bold|demi.?bold|bold|extra.?bold|black|heavy|[1-9]00)$/i,'').replace(/[^a-z0-9]/g,'');const family=root(base.name),faces=LIB.filter(f=>root(f.name)==family);if(faces.length<2)return FC[i.font]||fH();const w=+i.weight||400,rank=n=>{n=String(n).toLowerCase();return /thin/.test(n)?100:/extra.?light/.test(n)?200:/light/.test(n)?300:/medium/.test(n)?500:/semi.?bold|demi.?bold/.test(n)?600:/extra.?bold/.test(n)?800:/black|heavy/.test(n)?900:/bold/.test(n)?700:400};faces.sort((a,b)=>Math.abs(rank(a.name)-w)-Math.abs(rank(b.name)-w));return FC[faces[0].id]||FC[i.font]||fH()}
-function itemsSvg(id,o){let t='';for(const i of ITM){if(!i.on||(i.ly||'')!=id)continue;const c=i.c||effInk(o),w=i.w,h=i.h;let e;
+function itemsSvg(id,o){let t='';for(const i of ITM.map(q=>q.rad&&!q.curve&&Math.hypot(q.x,q.y)>1e-6?{...q,r:q.r-Math.atan2(q.x,q.y)*180/Math.PI}:q)){if(!i.on||(i.ly||'')!=id)continue;const c=i.c||effInk(o),w=i.w,h=i.h;let e;
 if(i.k=='text'){
  const sz=Math.max(.1,+i.h||2),sx=(i.sx||1)*(i.sc||1)*(i.flipX&&!i.curve?-1:1),sy=(i.sy||1)*(i.sc||1)*(i.flipY?-1:1),inward=!!(i.curve&&i.flipX);
  const xml=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
@@ -999,7 +1012,7 @@ $('#svc').onclick=async()=>toast((await copyText(svgText))?'SVG copied':'Copy fa
 $('#dl').onclick=async()=>{let why='unavailable';try{if(!DL&&typeof claude!='undefined')DL=await claude.use('downloads');if(DL){await DL.save({filename:fn(),data:svgText});toast('Saved');return}}catch(e){if(e&&e.code=='declined')return;why=(e&&(e.code||e.message))||'error'}svgDialog(why)};
 // ---- shapes: circles, squares, triangles and imported SVGs; each lives on a layer and moves with it
 const It=id=>ITM.find(i=>i.id==id);
-function cleanIt(a){const n=v=>isFinite(+v)?+v:0;return(Array.isArray(a)?a:[]).filter(i=>i&&['circle','square','triangle','svg','text'].includes(i.k)).map(i=>({id:String(i.id||uid()),name:String(i.name||i.k),k:i.k,ly:String(i.ly||''),on:i.on!==false?1:0,x:n(i.x),y:n(i.y),w:n(i.w)||5,h:n(i.h)||5,r:n(i.r),kx:n(i.kx),ky:n(i.ky),fl:i.fl?1:0,lw:n(i.lw),c:/^#[0-9a-f]{6}$/i.test(i.c||'')?i.c:'',cm:i.k=='svg'&&Array.isArray(i.cm)?i.cm.filter(c=>c&&/^[MLZ]$/.test(c.t)&&Array.isArray(c.p)):undefined,txt:String(i.txt||''),font:String(i.font||''),weight:n(i.weight)||400,sp:n(i.sp)||1,sx:n(i.sx)||1,sy:n(i.sy)||1,sc:n(i.sc)||1,curve:i.curve?1:0,flipX:i.flipX?1:0,flipY:i.flipY?1:0,fill:i.fill!==false,uniform:i.uniform?1:0}))}
+function cleanIt(a){const n=v=>isFinite(+v)?+v:0;return(Array.isArray(a)?a:[]).filter(i=>i&&['circle','square','triangle','svg','text'].includes(i.k)).map(i=>({id:String(i.id||uid()),name:String(i.name||i.k),k:i.k,ly:String(i.ly||''),on:i.on!==false?1:0,x:n(i.x),y:n(i.y),w:n(i.w)||5,h:n(i.h)||5,r:n(i.r),kx:n(i.kx),ky:n(i.ky),fl:i.fl?1:0,lw:n(i.lw),c:/^#[0-9a-f]{6}$/i.test(i.c||'')?i.c:'',cm:i.k=='svg'&&Array.isArray(i.cm)?i.cm.filter(c=>c&&/^[MLZ]$/.test(c.t)&&Array.isArray(c.p)):undefined,txt:String(i.txt||''),font:String(i.font||''),weight:n(i.weight)||400,sp:n(i.sp)||1,sx:n(i.sx)||1,sy:n(i.sy)||1,sc:n(i.sc)||1,curve:i.curve?1:0,flipX:i.flipX?1:0,flipY:i.flipY?1:0,fill:i.fill!==false,uniform:i.uniform?1:0,rad:i.rad?1:0}))}
 function addItem(k,name,cm,ar){const b=EDIT?BASE:S,sz=Math.max(2,+(b.dia/4).toFixed(2)),i={id:uid(),name:nm(ITM,name),k,ly:EDIT||'',on:1,x:0,y:0,w:ar&&ar<1?sz*ar:sz,h:k=='text'?2.2:(ar&&ar>1?sz/ar:sz),r:0,kx:0,ky:0,fl:0,lw:0,c:'',cm,txt:k=='text'?'DIAL TEXT':'',font:'',weight:400,sp:1,sx:1,sy:1,sc:1,curve:0,flipX:0,flipY:0,fill:true};ITM.push(i);SEL=i.id;render();itemsUI()}
 function pf(label,i,key,lo,hi,st,len,pair){
  const L=document.createElement('label'),sp=document.createElement('span'),w=document.createElement('div'),s=document.createElement('input'),t=document.createElement('input'),k=len?U.v:1;
@@ -1025,20 +1038,20 @@ const mk=(t,p)=>Object.assign(document.createElement(t),p),L=(t,n,w)=>{const l=d
 const nI=mk('input',{type:'text',value:i.name});nI.oninput=()=>{i.name=nI.value;sched()};nI.onchange=itemsUI;
 const sel=mk('select');sel.add(new Option('Base layer',''));LAY.forEach(l=>sel.add(new Option(l.name,l.id)));sel.value=i.ly;sel.onchange=()=>{i.ly=sel.value;render();itemsUI()};
 const fl=mk('input',{type:'checkbox',checked:!!i.fl});fl.onchange=()=>{i.fl=fl.checked?1:0;sched()};const lf=mk('label',{className:'b'});lf.append(fl,'Filled');
-const own=mk('input',{type:'checkbox',checked:!!i.c}),cc=mk('input',{type:'color',value:i.c||'#1c1c1c'}),setc=()=>{i.c=own.checked?cc.value:'';sched()};own.onchange=setc;cc.oninput=()=>{own.checked=true;setc()};const lo=mk('label',{className:'b'});lo.append(own,'Own colour');
+const own=mk('input',{type:'checkbox',checked:!!i.c}),cc=mk('input',{type:'color',value:i.c||'#1c1c1c'}),setc=()=>{i.c=own.checked?cc.value:'';sched()};own.onchange=setc;cc.oninput=()=>{own.checked=true;setc()};const lo=mk('label',{className:'b'});lo.append(own,'Own colour');const rad=mk('input',{type:'checkbox',checked:!!i.rad});rad.onchange=()=>{i.rad=rad.checked?1:0;sched();itemsUI()};const pol={get ang(){return((Math.atan2(i.x,i.y)*180/Math.PI)%360+360)%360},set ang(v){const r=Math.hypot(i.x,i.y),a=v*Math.PI/180;i.x=r*Math.sin(a);i.y=r*Math.cos(a)},get rad(){return Math.hypot(i.x,i.y)},set rad(v){const a=Math.atan2(i.x,i.y)||0;i.x=v*Math.sin(a);i.y=v*Math.cos(a)}},xy=()=>i.rad?[pf('Angle ° (spin around centre)',pol,'ang',0,360,1),pf('Distance from centre',pol,'rad',0,40,.1,1)]:[pf('X',i,'x',-40,40,.1,1),pf('Y',i,'y',-40,40,.1,1)],alR=()=>{const r=document.createElement('div');r.className='w';r.style.cssText='display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px';[['Centre X',()=>{i.x=0}],['Centre Y',()=>{i.y=0}],['Snap to hour',()=>{const a=Math.round(Math.atan2(i.x,i.y)/(PI/6))*PI/6,q=Math.hypot(i.x,i.y);i.x=q*Math.sin(a);i.y=q*Math.cos(a)}]].forEach(([t,f])=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.onclick=()=>{f();render();itemsUI()};r.append(b)});return r};const radL=mk('label',{className:'b'});radL.append(rad,'Align to radius (points outward)');
 ed.append(L('Name',nI,1),L('Layer',sel,1));
 if(i.k=='text'){
  const txt=mk('textarea',{value:i.txt||'',rows:2});txt.oninput=()=>{i.txt=txt.value;sched()};ed.append(L('Text',txt,1));
  const fs=mk('select');fs.add(new Option('Hour / rim font',''));LIB.forEach(f=>fs.add(new Option(f.name,f.id)));fs.value=i.font||'';fs.onchange=async()=>{i.font=fs.value;if(i.font)try{await Promise.all(LIB.map(f=>ensure(f.id)))}catch(e){}sched()};ed.append(L('Font family',fs,1));
  const wt=pf('Font weight',i,'weight',100,900,50);ed.append(wt);const sp=pf('Letter spacing',i,'sp',.5,3,.05);ed.append(sp);
  const curve=mk('input',{type:'checkbox',checked:!!i.curve});curve.onchange=()=>{i.curve=curve.checked?1:0;sched();itemsUI()};const cl=mk('label',{className:'b'});cl.append(curve,'Curve to dial radius');ed.append(cl);
- const fx=mk('input',{type:'checkbox',checked:!!i.flipX}),fy=mk('input',{type:'checkbox',checked:!!i.flipY});fx.onchange=()=>{i.flipX=fx.checked?1:0;sched()};fy.onchange=()=>{i.flipY=fy.checked?1:0;sched()};const fxl=mk('label',{className:'b'});fxl.append(fx,i.curve?'Flip: read left\u2192right at bottom':'Flip horizontal');const fyl=mk('label',{className:'b'});fyl.append(fy,'Flip vertical');ed.append(...(i.curve?[fxl]:[fxl,fyl]),pf('X',i,'x',-40,40,.1,1),pf('Y',i,'y',-40,40,.1,1),pf('Text size',i,'h',.2,20,.1,1),pf('Scale X',i,'sx',.1,5,.05),pf('Scale Y',i,'sy',.1,5,.05),pf('Uniform scale',i,'sc',.1,5,.05),pf('Rotation °',i,'r',-180,180,.5),pf('Skew X °',i,'kx',-80,80,.5),pf('Skew Y °',i,'ky',-80,80,.5));
+ const fx=mk('input',{type:'checkbox',checked:!!i.flipX}),fy=mk('input',{type:'checkbox',checked:!!i.flipY});fx.onchange=()=>{i.flipX=fx.checked?1:0;sched()};fy.onchange=()=>{i.flipY=fy.checked?1:0;sched()};const fxl=mk('label',{className:'b'});fxl.append(fx,i.curve?'Flip: read left\u2192right at bottom':'Flip horizontal');const fyl=mk('label',{className:'b'});fyl.append(fy,'Flip vertical');ed.append(...(i.curve?[fxl]:[radL,fxl,fyl]),...xy(),alR(),pf('Text size',i,'h',.2,20,.1,1),pf('Scale X',i,'sx',.1,5,.05),pf('Scale Y',i,'sy',.1,5,.05),pf('Uniform scale',i,'sc',.1,5,.05),pf('Rotation °',i,'r',-180,180,.5),pf('Skew X °',i,'kx',-80,80,.5),pf('Skew Y °',i,'ky',-80,80,.5));
  const fill=mk('input',{type:'checkbox',checked:i.fill!==false});fill.onchange=()=>{i.fill=fill.checked;sched()};const filll=mk('label',{className:'b'});filll.append(fill,'Filled text');ed.append(filll,pf('Stroke width',i,'lw',0,2,.01,1),L('Colour',cc,1));
-}else{const uni=mk('input',{type:'checkbox',checked:!!i.uniform});uni.onchange=()=>{i.uniform=uni.checked?1:0;itemsUI()};const ul=mk('label',{className:'b'});ul.append(uni,'Uniform scale');ed.append(ul,pf('X',i,'x',-40,40,.1,1),pf('Y',i,'y',-40,40,.1,1),pf('Width',i,'w',.5,60,.1,1,1),pf('Height',i,'h',.5,60,.1,1,1),pf('Rotation °',i,'r',-180,180,.5),pf('Skew X °',i,'kx',-80,80,.5),pf('Skew Y °',i,'ky',-80,80,.5),pf('Line weight',i,'lw',0,2,.01,1),lf,lo,L('Colour',cc,1));}}
+}else{const uni=mk('input',{type:'checkbox',checked:!!i.uniform});uni.onchange=()=>{i.uniform=uni.checked?1:0;itemsUI()};const ul=mk('label',{className:'b'});ul.append(uni,'Uniform scale');ed.append(ul,radL,...xy(),alR(),pf('Width',i,'w',.5,60,.1,1,1),pf('Height',i,'h',.5,60,.1,1,1),pf('Rotation °',i,'r',-180,180,.5),pf('Skew X °',i,'kx',-80,80,.5),pf('Skew Y °',i,'ky',-80,80,.5),pf('Line weight',i,'lw',0,2,.01,1),lf,lo,L('Colour',cc,1));}}
 const mvI=(i,d)=>{const a=ITM.indexOf(i),b=a+d;if(b<0||b>=ITM.length)return;ITM.splice(a,1);ITM.splice(b,0,i);render();itemsUI()};
-(()=>{const d=document.createElement('details');d.innerHTML=`<summary>Shapes</summary><div class='g'><div class='w m'>Add circles, squares, triangles or your own SVG. Every shape sits on a layer and moves, rotates and scales with it.</div><div class='w' style='display:flex;gap:8px;flex-wrap:wrap'><button id='ac'>+ Circle</button><button id='asq'>+ Square</button><button id='atr'>+ Triangle</button><button id='atx'>+ Text</button><button id='asv'>+ SVG\u2026</button><input type='file' id='itf' accept='.svg' hidden></div><div class='w' id='itlist'></div><div class='w' id='ited' hidden style='display:grid;grid-template-columns:1fr 1fr;gap:10px'></div></div>`;
+(()=>{const d=document.createElement('details');d.innerHTML=`<summary>Shapes</summary><div class='g'><div class='w m'>Add circles, squares, triangles or your own SVG. Every shape sits on a layer and moves, rotates and scales with it.</div><div class='w' style='display:flex;gap:8px;flex-wrap:wrap'><button id='ac'>+ Circle</button><button id='asq'>+ Square</button><button id='atr'>+ Triangle</button><button id='atx'>+ Text</button><button id='asv'>+ SVG\u2026</button><button id='adw'>+ Date window</button><input type='file' id='itf' accept='.svg' hidden></div><div class='w' id='itlist'></div><div class='w' id='ited' hidden style='display:grid;grid-template-columns:1fr 1fr;gap:10px'></div></div>`;
 $('#lylist').closest('details').after(d);
-$('#ac').onclick=()=>addItem('circle','Circle');$('#asq').onclick=()=>addItem('square','Square');$('#atr').onclick=()=>addItem('triangle','Triangle');$('#atx').onclick=()=>addItem('text','Text');$('#asv').onclick=()=>$('#itf').click();
+$('#ac').onclick=()=>addItem('circle','Circle');$('#asq').onclick=()=>addItem('square','Square');$('#atr').onclick=()=>addItem('triangle','Triangle');$('#atx').onclick=()=>addItem('text','Text');$('#asv').onclick=()=>$('#itf').click();$('#adw').onclick=addDateWindow;
 $('#itf').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const cm=await loadSvg(f);addItem('svg',f.name.replace(/\.svg$/i,''),cm.map(c=>({t:c.t,p:c.p.map(v=>+v.toFixed(4))})),cm.ar)}catch(x){toast('That SVG couldn\u2019t be read')}};
 $('#itlist').onclick=e=>{const row=e.target.closest('.ly'),a=e.target.closest('[data-a]');if(!row||!a)return;const i=It(row.dataset.i),act=a.dataset.a;
 if(act=='eye'){i.on=i.on?0:1;render();itemsUI()}else if(act=='sel'){SEL=SEL==i.id?null:i.id;itemsUI()}
@@ -1125,7 +1138,170 @@ if(d.open){const h=g.offsetHeight+'px';const a=g.animate([{height:h,opacity:1},z
 else{d.open=true;const h=g.offsetHeight+'px',a=g.animate([z,{height:h,opacity:1}],o);a.onfinish=done}}));
 ['input','click'].forEach(t=>ctl.addEventListener(t,()=>requestAnimationFrame(()=>$$('#ctl input[type=range]').forEach(fillR))));
 Promise.race([loadLib(),new Promise(r=>setTimeout(r,1500))]).then(()=>{LIBOK=1;go()});
-</script><script>(()=>{
+
+// ---- V4.8 additions
+function addDateWindow(){const b=EDIT?BASE:S,h=+b.dw>0?+b.dw:3,a=h*Math.PI/6,r=(+b.ring||12)+(+b.noff||0),hs=+b.hsize||2.8;
+addItem('square','Date window');const i=ITM[ITM.length-1];i.w=+(hs*1.25).toFixed(2);i.h=+(hs*1.9).toFixed(2);i.x=+(r*Math.sin(a)).toFixed(3);i.y=+(r*Math.cos(a)).toFixed(3);i.rad=1;i.lw=.12;i.fl=0;
+if(!(+b.dw>0)){b.dw=h;if(!EDIT)syncUI()}render();itemsUI();toast('Date window added at '+h+' o’clock — drag it anywhere, it keeps pointing outward')}
+function askPick(title,msg,opts,cancel){return new Promise(res=>{const d=document.createElement('dialog');d.innerHTML=`<div class="in"><h3>${esc(title)}</h3><p class="m">${msg}</p><div class="opts" style="grid-template-columns:1fr">${opts.map(([k,b,s])=>`<button data-k="${esc(k)}"><b>${esc(b)}</b>${s?`<small>${esc(s)}</small>`:''}</button>`).join('')}</div>${cancel?`<div class="row" style="margin-top:8px"><button data-k="">${esc(cancel)}</button></div>`:''}</div>`;document.body.append(d);
+d.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;d.close();d.remove();res(b.dataset.k||null)});d.addEventListener('cancel',()=>{d.remove();res(null)});d.showModal()})}
+const agoT=t=>{const m=Math.round((Date.now()-t)/6e4);return m<1?'just now':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' days ago'};
+const sumP=p=>{const d=p.dials.find(x=>x.id==p.cur)||p.dials[0];return `${p.dials.length} dial${p.dials.length>1?'s':''} · “${d.name}”`};
+async function welcome(){if(!LOADED)return;if(sessionStorage.getItem('dsw')){sessionStorage.removeItem('dsw');return}
+let arch=[];try{const ks=(await KV.keys()).filter(k=>String(k).startsWith('arch:')).sort().reverse().slice(0,6);for(const k of ks){const v=await KV.get(k);if(v&&v.dials&&v.dials.length)arch.push([k,v])}}catch(e){}
+const k=await askPick('Welcome back',`Your last session is saved on this device${PRJ.saved?' · edited '+agoT(PRJ.saved):''}.`,[['c','Continue last session',sumP(PRJ)],['n','Start a new project','The current one is kept under previous projects'],...arch.map(([k,v])=>['a:'+k,'Open previous: '+sumP(v),v.saved?'saved '+agoT(v.saved):''])]);
+if(!k||k=='c')return;window.__NOSAVE=1;await KV.set('arch:'+Date.now(),{...PRJ,saved:PRJ.saved||Date.now()});
+if(k=='n'){try{localStorage.removeItem(KEY)}catch(e){}await KV.del('prj')}
+else{const key=k.slice(2),v=await KV.get(key);try{localStorage.removeItem(KEY)}catch(e){}await KV.set('prj',{...v,saved:Date.now()});await KV.del(key);sessionStorage.setItem('dsw','1')}
+location.reload()}
+setTimeout(welcome,400);
+const toB64=buf=>{const u=new Uint8Array(buf);let s='';for(let i=0;i<u.length;i+=32768)s+=String.fromCharCode.apply(null,u.subarray(i,i+32768));return btoa(s)};
+async function bkExport(){const info=$('#bkinfo'),all=$('#bkall').checked;await saveNow();const js=JSON.stringify(PRJ),fonts=all?LIB:LIB.filter(f=>js.includes(f.id));
+const parts=[JSON.stringify({dialstudio:1,v:'4.8',t:Date.now(),prj:PRJ,tpl:(window.TPLX?TPLX.list:[]),bg:BG.img?{...BG,_s:undefined,_u:undefined}:null,nf:fonts.length})+'\n'];let n=0;
+for(const f of fonts){try{const r=await FDB.get(f.id);if(r)parts.push(JSON.stringify({id:f.id,name:f.name,size:f.size,dir:f.dir,b:toB64(r.bytes)})+'\n')}catch(e){}if(++n%10==0){info.textContent=`Packing fonts ${n} / ${fonts.length}…`;await new Promise(r=>setTimeout(r))}}
+const name='dial-studio-backup-'+new Date().toISOString().slice(0,10)+'.dialstudio',blob=new Blob(parts,{type:'application/octet-stream'}),file=new File([blob],name);
+info.textContent=`Backup ready: ${PRJ.dials.length} dial(s), ${fonts.length} font(s), ${(blob.size/1048576).toFixed(1)} MB`;
+if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Dial Studio backup'});return}catch(e){if(e&&e.name=='AbortError')return}}
+const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+async function bkImport(file){const info=$('#bkinfo');let head,lines;try{lines=(await file.text()).split('\n').filter(Boolean);head=JSON.parse(lines[0])}catch(e){return toast('That isn’t a Dial Studio backup')}
+if(!head.dialstudio||!head.prj||!Array.isArray(head.prj.dials)||!head.prj.dials.length)return toast('That isn’t a Dial Studio backup');
+let nf=0;for(let n=1;n<lines.length;n++){try{const f=JSON.parse(lines[n]);if(LIB.some(x=>x.id==f.id))continue;const bytes=Uint8Array.from(atob(f.b),c=>c.charCodeAt(0)).buffer;await FDB.put({id:f.id,name:f.name,size:f.size,dir:f.dir,bytes});nf++}catch(e){}if(n%10==0){info.textContent=`Importing fonts ${n} / ${lines.length-1}…`;await new Promise(r=>setTimeout(r))}}
+if(window.TPLX&&Array.isArray(head.tpl))TPLX.merge(head.tpl);const k=await askPick('Import backup',`${head.prj.dials.length} dial${head.prj.dials.length>1?'s':''} and ${nf} new font${nf==1?'':'s'} found.`,[['m','Add to my dials','Keeps what you have and adds these as new dials'],['r','Replace everything','Your current work is kept under previous projects']],'Cancel');
+if(!k)return;window.__NOSAVE=1;
+if(k=='m'){const ids=new Set(PRJ.dials.map(d=>d.id));head.prj.dials.forEach(d=>{if(ids.has(d.id))d.id=uid();PRJ.dials.push(d)});if(head.bg&&!BG.img)try{localStorage.setItem('dialstudio.bg',JSON.stringify(head.bg))}catch(e){}window.__NOSAVE=0;await saveNow()}
+else{await KV.set('arch:'+Date.now(),{...PRJ,saved:PRJ.saved||Date.now()});try{localStorage.removeItem(KEY)}catch(e){}await KV.set('prj',{...head.prj,saved:Date.now()});if(head.bg)try{localStorage.setItem('dialstudio.bg',JSON.stringify(head.bg))}catch(e){}}
+sessionStorage.setItem('dsw','1');location.reload()}
+async function storInfo(){const i=$('#bkinfo');try{const e=await navigator.storage.estimate(),p=navigator.storage.persisted&&await navigator.storage.persisted();i.textContent=`On this device: ${((e.usage||0)/1048576).toFixed(1)} MB · ${p?'protected from automatic clearing':'the browser may clear it if space runs low — install the app to your home screen to protect it'}`}catch(x){}}
+$('#bkx').onclick=bkExport;$('#bki').onclick=()=>$('#bkf').click();$('#bkf').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)bkImport(f)};$('#shb').addEventListener('click',storInfo);
+
+
+// ---- V4.9.1: guides & rulers, snapping (move + rotation), hands preview
+const VW=(()=>{const d={g:0,ru:1,ro:'page',cx:1,hr:1,mn:0,rc:1,sn:1,rs:0,rsa:15,m:0,h:0,live:0,t:610.5833,hs:'Dauphine',ss:'Thin',mv:'q',lume:0,lc:'#b8f5c8',fix:0,ref:16,hl:.5,ml:.82,sl:.9,hw:1.8,mw:1.3,sw:.3,tail:.18,hub:.9,hc:'#d9d9d9',sc:'#ff2d3a'};try{return{...d,...JSON.parse(localStorage.getItem('dialstudio.view')||'{}')}}catch(e){return d}})();
+const vsave=()=>{try{localStorage.setItem('dialstudio.view',JSON.stringify(VW))}catch(e){}};
+const gdv=document.createElement('div');gdv.id='gd';stg.append(gdv);
+let HI=null,MS=null;const BT={q:1,'5':5,'6':6,'8':8,'10':10};
+const ggeo=()=>{const sv=stg.querySelector(':scope>svg:not(#gz)');if(!sv)return null;const q=(sv.getAttribute('viewBox')||'').split(/\s+/).map(Number);if(q.length!=4||!q[2])return null;const w=stg.clientWidth,h=stg.clientHeight,k=Math.min(w/q[2],h/q[3]);return{x:q[0],y:q[1],W:q[2],H:q[3],k,ox:(w-q[2]*k)/2,oy:(h-q[3]*k)/2}};
+// hand styles: pr = outline [along 0..1, half-width], ring / star / dot / hole extras, m = minute-hand override
+const HSWD=[[0,.5],[.55,.5],[1,.04]];
+const HSTY={Baton:{pr:[[0,.5],[.96,.5],[1,.5]],lume:1},Sword:{pr:HSWD,lume:1},Dauphine:{pr:[[0,.3],[.1,.5],[.6,.5],[1,0]],lume:1},Leaf:{pr:[[0,.18],[.2,.45],[.5,.5],[.8,.3],[1,0]],lume:1},Alpha:{pr:[[0,.2],[.35,.5],[1,0]],lume:1},Pencil:{pr:[[0,.4],[.85,.4],[1,0]]},
+Syringe:{pr:[[0,.2],[.52,.2],[.68,.5],[.8,.2],[1,0]]},Spade:{pr:[[0,.15],[.55,.15],[.68,.5],[.82,.4],[1,0]]},Cathedral:{pr:[[0,.28],[.3,.5],[.72,.5],[1,0]],hole:1},
+Lollipop:{pr:[[0,.2],[.86,.2],[.9,.2]],dot:{at:.86,r:.62}},Breguet:{pr:[[0,.1],[.8,.1],[1,0]],ring:{at:.84,r:.6,th:.14}},
+Mercedes:{pr:[[0,.14],[.74,.14],[.86,.14]],ring:{at:.79,r:.78,th:.12},star:1,m:{pr:HSWD,ring:null,star:0,lume:1}},
+Snowflake:{pr:[[0,.26],[.5,.26],[.5,.5],[.78,.5],[.78,.26],[.86,.26],[1,0]],m:{pr:HSWD,lume:1}}};
+const HSEC={Thin:{pr:[[0,.5],[.98,.5],[1,.5]]},Lollipop:{pr:[[0,.5],[.98,.5],[1,.5]],dot:{at:.8,r:3.2}},Arrow:{pr:[[0,.5],[.76,.5],[.76,2.2],[1,0]]}};
+function ovDraw(){const w=stg.clientWidth,h=stg.clientHeight,g=ggeo();gdv.hidden=!g||!w;if(!g||!w)return;
+const b=EDIT?BASE:S,ppm=g.k*Z.s,u2=(x,y)=>[(g.ox+(x-g.x)*g.k)*Z.s+Z.x,(g.oy+(y-g.y)*g.k)*Z.s+Z.y],[cx,cy]=u2(0,0),R=b.dia/2*ppm,f=n=>+n.toFixed(1),acc='#ff2d3a',un=U.v,FF="font-family=\"Inter,system-ui,sans-serif\"";let o='';
+const ln=(x1,y1,x2,y2,c,wd,da)=>`<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke="${c}" stroke-width="${wd}"${da?` stroke-dasharray="${da}"`:''}/>`;
+const ci=(r,c,wd,da)=>`<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(r)}" fill="none" stroke="${c}" stroke-width="${wd}"${da?` stroke-dasharray="${da}"`:''}/>`;
+const gc='rgba(255,45,58,.55)',hc='rgba(255,45,58,.95)';
+if(VW.g){
+ if(VW.cx)o+=ln(0,cy,w,cy,gc,1,'4 4')+ln(cx,0,cx,h,gc,1,'4 4');
+ if(VW.rc){o+=ci(R,gc,1,'5 4');const rg=(+b.ring||0)*ppm;if(rg>0)o+=ci(rg,gc,1,'5 4');const fl=(+b.ring||0)*(+b.flr||.7)*ppm;if(fl>2&&b.style=='Flieger')o+=ci(fl,gc,1,'3 4')}
+ if(VW.hr)for(let k=0;k<12;k++){const a=k*Math.PI/6;o+=ln(cx,cy,cx+R*Math.sin(a),cy-R*Math.cos(a),k%3?'rgba(255,45,58,.35)':gc,1,'3 5')}
+ if(VW.mn)for(let k=0;k<60;k++){if(k%5==0)continue;const a=k*Math.PI/30;o+=ln(cx+R*.94*Math.sin(a),cy-R*.94*Math.cos(a),cx+R*Math.sin(a),cy-R*Math.cos(a),'rgba(255,45,58,.4)',1)}
+ if(HI){if(HI.x)o+=ln(cx,0,cx,h,hc,1.5);if(HI.y)o+=ln(0,cy,w,cy,hc,1.5);if(HI.r)o+=ci(HI.r*ppm,hc,1.5);if(HI.a!=null){const a=HI.a*Math.PI/180;o+=ln(cx,cy,cx+Math.max(w,h)*Math.sin(a),cy-Math.max(w,h)*Math.cos(a),hc,1.5)}}
+}
+if(VW.h){const m=VW.t%720,ha=m/720*360,ma=(m%60)*6,Dr=VW.fix?VW.ref:b.dia/2,sv=(m%1)*60,bt=BT[VW.mv];let sa=sv*6;
+ if(bt){const st=6/bt,k=Math.floor(sv*bt+1e-9);sa=k*st;if(VW.live){const dt=(sv*bt-k)*1000/bt,q=bt==1?[.35,45,14]:[.4,22,7];sa+=st*q[0]*Math.exp(-dt/q[1])*Math.cos(dt/q[2])}}
+ const hand=(ang,L,wd,sp,tf,col,sk,lm)=>{const a=ang*Math.PI/180,ca=Math.cos(a),sn=Math.sin(a),P=(al,x)=>u2(al*sn+x*ca,-(al*ca-x*sn)),Dd=pts=>'M'+pts.map(p=>f(p[0])+' '+f(p[1])).join('L')+'Z',tl=L*tf,pr=sp.pr;
+  const loop=(prof,wf,A0,A1,tail)=>{const l=[...(tail?[[-tl,prof[0][1]*wd*wf]]:[]),...prof.map(([q,hh])=>[A0+q*(A1-A0),hh*wd*wf])],r=l.slice(0,-1).reverse().map(([al,x])=>[al,-x]);return Dd([...l,...r].map(([al,x])=>P(al,x)))};
+  let d=loop(pr,1,0,L,1),x='';if(sp.hole)d+=loop(pr,.45,.2*L,.8*L,0);
+  x+=`<path d="${d}" fill="${col}" fill-rule="evenodd" stroke="${sk}" stroke-width="1"/>`;
+  if(lm&&sp.lume&&VW.lume)x+=`<path d="${loop(pr,.5,.16*L,.9*L,0)}" fill="${VW.lc}"/>`;
+  if(sp.ring){const c=P(sp.ring.at*L,0),r=sp.ring.r*wd*ppm,th=Math.max(1,sp.ring.th*wd*ppm);x+=`<circle cx="${f(c[0])}" cy="${f(c[1])}" r="${f(r)}" fill="none" stroke="${sk}" stroke-width="${f(th+2)}"/><circle cx="${f(c[0])}" cy="${f(c[1])}" r="${f(r)}" fill="none" stroke="${col}" stroke-width="${f(th)}"/>`;
+   if(sp.star)for(let k=0;k<3;k++){const q=a+k*2*Math.PI/3;x+=ln(c[0],c[1],c[0]+Math.sin(q)*(r-th/2),c[1]-Math.cos(q)*(r-th/2),col,f(th*.9))}}
+  if(sp.dot){const c=P(sp.dot.at*L,0);x+=`<circle cx="${f(c[0])}" cy="${f(c[1])}" r="${f(sp.dot.r*wd*ppm)}" fill="${lm&&VW.lume?VW.lc:col}" stroke="${sk}" stroke-width="1"/>`}
+  return x};
+ const S1=HSTY[VW.hs]||HSTY.Baton,S2=S1.m?{...S1,ring:null,star:0,hole:0,dot:null,...S1.m}:S1,sx=cx-Dr*VW.sl*.22*Math.sin(sa*Math.PI/180)*ppm,sy=cy+Dr*VW.sl*.22*Math.cos(sa*Math.PI/180)*ppm;
+ o+=hand(ha,Dr*VW.hl,VW.hw,S1,VW.tail,VW.hc,'#111',1)+hand(ma,Dr*VW.ml,VW.mw,S2,VW.tail,VW.hc,'#111',1)+hand(sa,Dr*VW.sl,VW.sw,HSEC[VW.ss]||HSEC.Thin,.22,VW.sc,'none',0)
+  +`<circle cx="${f(sx)}" cy="${f(sy)}" r="${f(VW.sw*2.2*ppm)}" fill="${VW.sc}"/><circle cx="${f(cx)}" cy="${f(cy)}" r="${f(VW.hub*ppm)}" fill="#888" stroke="#111" stroke-width="1"/><circle cx="${f(cx)}" cy="${f(cy)}" r="${f(VW.hub*ppm*.35)}" fill="#111"/>`}
+if(VW.g&&VW.ru){const cand=[.1,.2,.5,1,2,5,10,20,50,100],lab=cand.find(c=>c*un*ppm>=46)||100,mi=lab/5,B=16,dig=Math.max(0,-Math.floor(Math.log10(lab))),pg=VW.ro!='centre',[x0,y0]=pg?u2(g.x,g.y):[cx,cy],sg=v=>(!pg&&v>0?'+':'')+v.toFixed(dig);
+ o+=`<rect x="0" y="0" width="${w}" height="${B}" fill="rgba(0,0,0,.72)"/><rect x="0" y="0" width="${B}" height="${h}" fill="rgba(0,0,0,.72)"/>`;let tx='';const ku=ppm*un;
+ for(let k=Math.ceil((B-x0)/ku/mi);k<=Math.floor((w-x0)/ku/mi);k++){const v=+(k*mi).toFixed(4),px=x0+v*ku,mj=k%5==0;tx+=ln(px,B,px,B-(mj?9:4),v==0?acc:'rgba(255,255,255,.7)',v==0?1.6:1);if(mj&&px>B+14)tx+=`<text x="${f(px+2)}" y="9" font-size="9" fill="#fff" ${FF}>${sg(v)}</text>`}
+ const yv=pg?(py=>(py-y0)/ku):(py=>(cy-py)/ku);
+ for(let k=Math.ceil(Math.min(yv(B),yv(h))/mi);k<=Math.floor(Math.max(yv(B),yv(h))/mi);k++){const v=+(k*mi).toFixed(4),py=pg?y0+v*ku:cy-v*ku,mj=k%5==0;if(py<B)continue;tx+=ln(B,py,B-(mj?9:4),py,v==0?acc:'rgba(255,255,255,.7)',v==0?1.6:1);if(mj&&py>B+16)tx+=`<text transform="translate(9 ${f(py-2)}) rotate(-90)" font-size="9" fill="#fff" ${FF}>${sg(v)}</text>`}
+ if(pg)tx+=`<path d="M${f(cx-4)} ${B} L${f(cx+4)} ${B} L${f(cx)} ${B-7}Z" fill="${acc}"/><path d="M${B} ${f(cy-4)} L${B} ${f(cy+4)} L${B-7} ${f(cy)}Z" fill="${acc}"/>`;
+ o+=tx+`<text x="${w-4}" y="${h-5}" text-anchor="end" font-size="10" fill="${acc}" ${FF}>${un==10?'cm':'mm'} · ${pg?'from page corner (red ▲ = dial centre)':'from dial centre (+ right / + up)'}</text>`}
+if(MS&&MS.b){const[ax,ay]=u2(MS.a[0],MS.a[1]),[bx,by]=u2(MS.b[0],MS.b[1]),dx=(MS.b[0]-MS.a[0])/un,dy=-(MS.b[1]-MS.a[1])/un,d=Math.hypot(dx,dy),an=(Math.atan2(dx,dy)*180/Math.PI+360)%360;
+ o+=ln(ax,ay,bx,by,'#ffd60a',1.5)+`<circle cx="${f(ax)}" cy="${f(ay)}" r="4" fill="#ffd60a"/><circle cx="${f(bx)}" cy="${f(by)}" r="4" fill="#ffd60a"/><rect x="${f((ax+bx)/2-62)}" y="${f((ay+by)/2-26)}" width="124" height="22" rx="6" fill="rgba(0,0,0,.8)"/><text x="${f((ax+bx)/2)}" y="${f((ay+by)/2-11)}" text-anchor="middle" font-size="11" fill="#ffd60a" ${FF}>${d.toFixed(2)} ${un==10?'cm':'mm'} · ${an.toFixed(0)}°</text>`}
+gdv.innerHTML=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${o}</svg>`;
+$$('.vk').forEach(t=>t.classList.toggle('on',!!VW[t.dataset.vk]))}
+{const _az=applyZ;applyZ=function(){_az();ovDraw()};}
+addEventListener('resize',()=>ovDraw());
+// measure tool (captured before the stage pans)
+stg.addEventListener('pointerdown',e=>{if(!VW.m||e.target.closest('#pvb,#gz'))return;const g=ggeo();if(!g)return;e.stopPropagation();e.preventDefault();const r=stg.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top,u=[((px-Z.x)/Z.s-g.ox)/g.k+g.x,((py-Z.y)/Z.s-g.oy)/g.k+g.y];MS={a:u,b:null,id:e.pointerId};stg.setPointerCapture(e.pointerId);ovDraw()},true);
+stg.addEventListener('pointermove',e=>{if(!MS||MS.id!==e.pointerId)return;const g=ggeo(),r=stg.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;MS.b=[((px-Z.x)/Z.s-g.ox)/g.k+g.x,((py-Z.y)/Z.s-g.oy)/g.k+g.y];ovDraw()},true);
+stg.addEventListener('pointerup',e=>{if(MS&&MS.id===e.pointerId)MS.id=null;if(HI){HI=null;ovDraw()}},true);
+// snapping while dragging a shape (runs after the built-in move handler)
+stg.addEventListener('pointermove',e=>{const h=e.target;if(!(VW.g&&VW.sn)||!h.dataset||h.dataset.g!='m'||!SEL)return;const i=It(SEL),g=ggeo();if(!i||!i.on||!g)return;
+const bs=EDIT?BASE:S,o=!i.ly?bs:(i.ly==EDIT?S:{...bs,...((Lx(i.ly)||{}).s||{})});if((+o.lx||0)||(+o.ly||0)||(+o.lrot||0)||(o.lsc||1)!=1)return;
+const thr=9/(g.k*Z.s);let x=i.x,y=i.y;HI={};if(Math.abs(x)<thr){x=0;HI.x=1}if(Math.abs(y)<thr){y=0;HI.y=1}
+let r2=Math.hypot(x,y);for(const Rr of[bs.dia/2,+bs.ring||0,(+bs.ring||0)*(+bs.flr||.7)].filter(v=>v>0))if(Math.abs(r2-Rr)<thr){const q=Rr/r2;x*=q;y*=q;HI.r=Rr;break}
+r2=Math.hypot(x,y);if(r2>thr){const st=VW.mn?6:30,ang=Math.atan2(x,y)*180/PI,near=Math.round(ang/st)*st;if(Math.abs(ang-near)*PI/180*r2<thr){const a=near*PI/180;x=r2*Math.sin(a);y=r2*Math.cos(a);HI.a=near}}
+i.x=x;i.y=y;sched();ovDraw()});
+// rotation snapping (rotate handle): grid steps, and "pointing outward" for shapes that aren't radius-aligned
+stg.addEventListener('pointermove',e=>{const h=e.target;if(!VW.rs||!h.dataset||h.dataset.g!='r')return;const st=+VW.rsa||15,i=SEL&&It(SEL);
+if(i&&i.on){let r=Math.round(i.r/st)*st;if(!i.rad&&!i.curve){const th=Math.atan2(i.x,i.y)*180/PI,dv=((i.r+th+540)%360)-180;if(Math.abs(dv)<Math.max(4,st/3))r=-th}i.r=+r.toFixed(3)}
+else{const s=st*PI/180;S.lrot=Math.round((S.lrot||0)/s)*s}
+sched()});
+// toolbar buttons (bottom row, next to the gizmo button) + the View tab
+const CK={};function vsync(){for(const k in CK)CK[k].checked=!!VW[k]}
+setTimeout(()=>{const zb=$('#zb');if(!zb)return;[['g','⌗','Guides, rulers and snapping'],['h','◷','Hands preview'],['rs','⟳','Rotation snap']].forEach(([k,t,ti])=>{const b=document.createElement('button');b.type='button';b.className='ic vk';b.dataset.vk=k;b.textContent=t;b.title=ti;b.setAttribute('aria-label',ti);b.onclick=()=>{VW[k]=VW[k]?0:1;vsave();vsync();ovDraw()};zb.append(b)});ovDraw()},80);
+(()=>{const el=(t,p={},...k)=>{const n=Object.assign(document.createElement(t),p);n.append(...k);return n};
+const d=el('details',{innerHTML:'<summary>View</summary>'}),g=el('div',{className:'g'});d.append(g);
+const H=t=>g.append(el('div',{className:'w m',innerHTML:`<b>${t}</b>`}));
+const chk=(t,k,after)=>{const i=el('input',{type:'checkbox',checked:!!VW[k]});i.onchange=()=>{VW[k]=i.checked?1:0;if(k=='m'&&!VW.m)MS=null;vsave();after&&after();ovDraw()};CK[k]=i;g.append(el('label',{className:'b'},i,t))};
+const sel=(t,k,opts,after)=>{const s=el('select');opts.forEach(([v,l])=>s.add(new Option(l,v)));s.value=VW[k];s.onchange=()=>{VW[k]=isNaN(+s.value)||k=='mv'?s.value:+s.value;vsave();after&&after();ovDraw()};g.append(el('label',{className:'w'},el('span',{textContent:t}),s))};
+const sl=(t,k,mn,mx,st,fm)=>{const s=el('input',{type:'range',min:mn,max:mx,step:st,value:VW[k]}),v=el('small',{textContent:fm?fm(VW[k]):VW[k]});s.oninput=()=>{VW[k]=+s.value;v.textContent=fm?fm(VW[k]):VW[k];vsave();if(typeof fillR=='function')fillR(s);ovDraw()};if(typeof fillR=='function')fillR(s);g.append(el('label',{className:'w'},el('span',{textContent:t}),s,v));return s};
+H('Guides & rulers');chk('Show guides','g');chk('Rulers','ru');sel('Ruler zero point','ro',[['page','Page corner (like a normal ruler)'],['centre','Dial centre (+ right / + up, − left / − down)']]);chk('Centre cross','cx');chk('Hour lines','hr');chk('Minute lines','mn');chk('Radius circles','rc');chk('Measure tool (drag on the dial)','m');
+H('Snapping');chk('Snap moving shapes to guides','sn');chk('Snap rotation','rs');sel('Rotation step','rsa',[[5,'5°'],[15,'15°'],[30,'30°'],[45,'45°'],[90,'90°']]);
+H('Hands preview (never exported)');chk('Show hands','h');chk('Live time','live',live);chk('Keep hands the same size when the dial size changes','fix',()=>{if(VW.fix)VW.ref=(EDIT?BASE:S).dia/2});
+const fmt=m=>{const t=Math.round(m*60)%43200,hh=Math.floor(t/3600)||12,mm=Math.floor(t%3600/60),ss=t%60;return `${hh}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`};
+const ts=sl('Time','t',0,719.98,.016667,fmt);
+const pr=el('div',{className:'w'});pr.style.cssText='display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px';
+[['10:10:35',()=>610.5833],['10:08:37',()=>608.6167],['Now',()=>{const n=new Date;return(n.getHours()%12)*60+n.getMinutes()+n.getSeconds()/60}]].forEach(([t,f])=>pr.append(el('button',{type:'button',textContent:t,onclick(){VW.t=f();ts.value=VW.t;ts.dispatchEvent(new Event('input'))}})));g.append(pr);
+sel('Hour & minute hand style','hs',Object.keys(HSTY).map(k=>[k,k]));sel('Second hand style','ss',Object.keys(HSEC).map(k=>[k,k]));
+sel('Seconds movement','mv',[['q','Quartz · 1 tick per second'],['5','Mechanical · 18,000 vph (5 microticks/s)'],['6','Mechanical · 21,600 vph (6/s)'],['8','Mechanical · 28,800 vph (8/s)'],['10','Mechanical · 36,000 vph (10/s)'],['s','Smooth sweep']]);
+chk('Lume fill on hands','lume');
+sl('Hour hand length','hl',.2,1,.01,v=>Math.round(v*100)+'%');sl('Minute hand length','ml',.3,1,.01,v=>Math.round(v*100)+'%');sl('Second hand length','sl',.3,1.05,.01,v=>Math.round(v*100)+'%');
+sl('Hour hand width (mm)','hw',.4,5,.05);sl('Minute hand width (mm)','mw',.3,4,.05);sl('Second hand width (mm)','sw',.1,1,.01);sl('Tail length','tail',0,.4,.01,v=>Math.round(v*100)+'%');sl('Centre cap (mm)','hub',.3,3,.05);
+const cc=(t,k)=>{const i=el('input',{type:'color',value:VW[k]});i.oninput=()=>{VW[k]=i.value;vsave();ovDraw()};g.append(el('label',{className:'w'},el('span',{textContent:t}),i))};cc('Hour / minute colour','hc');cc('Second hand colour','sc');cc('Lume colour','lc');
+$('#ctl').append(d);
+let lt=0;function live(){clearInterval(lt);if(VW.live){lt=setInterval(()=>{if(!VW.h)return;const n=new Date;VW.t=(n.getHours()%12)*60+n.getMinutes()+(n.getSeconds()+n.getMilliseconds()/1000)/60;ts.value=VW.t;if(typeof fillR=='function')fillR(ts);const lb=ts.nextSibling;if(lb)lb.textContent=fmt(VW.t);ovDraw()},40)}}live();
+})();
+// ---- templates (saved on this device, included in backup files)
+const TPLX={list:[],merge(a){const ids=new Set(this.list.map(t=>t.id));a.forEach(t=>{if(t&&t.id&&t.sn&&!ids.has(t.id))this.list.push(t)});this.save()},
+save(){try{localStorage.setItem('dialstudio.tpl',JSON.stringify(this.list))}catch(e){}KV.set('tpl',this.list).catch(()=>{});tplUI()}};
+try{TPLX.list=JSON.parse(localStorage.getItem('dialstudio.tpl')||'[]')}catch(e){}
+KV.get('tpl').then(v=>{if(Array.isArray(v)&&v.length>=TPLX.list.length){TPLX.list=v;tplUI()}}).catch(()=>{});
+function tplUI(){const el=$('#tpll');if(!el)return;el.innerHTML=TPLX.list.map(t=>`<div class="ly" data-t="${t.id}"><div class="nm"><b>${esc(t.name)}</b><small>${t.kind=='s'?'settings only':'everything'} · ${agoT(t.t)}</small></div><button class="ic" data-a="tm" aria-label="Template options">⋯</button><button data-a="tl">Load</button></div>`).join('')||'<div class="m">No templates yet. Set up a dial the way you like it, then save it here.</div>'}
+async function tplSave(over){const kind=over?over.kind:await askPick('Save template','What should the template contain?',[['a','Everything','Settings, layers, groups and shapes'],['s','Settings only','Dial look and fonts, without layers or shapes']],'Cancel');if(!kind)return;
+const name=over?over.name:await ask('Template name',{val:'My template',ok:'Save'});if(!name)return;let sn=clone(snap());if(kind=='s')sn={s:sn.s,f:sn.f};
+if(over){over.sn=sn;over.t=Date.now()}else TPLX.list.unshift({id:uid(),name,kind,sn,t:Date.now()});TPLX.save();toast('Template saved')}
+async function tplLoad(t,mode){const v=VV(),d=DD();
+if(mode=='dial'){const nd=mkD(t.name,clone(t.sn));PRJ.dials.push(nd);PRJ.cur=nd.id;go();toast('New dial from template');return}
+if(mode=='ver'){const nv=mkV(t.name,clone(t.sn));d.vs.push(nv);d.cur=nv.id;go();toast('New version from template');return}
+const c=v.cps.find(x=>x.id==v.base);if((!c||!same(v.work,c.sn))&&!await ask('Replace current look?',{msg:'Your unsaved changes will be replaced by the template. Save a checkpoint first to keep them.',ok:'Load template'}))return;
+v.work=clone(t.sn);go();toast('Template loaded')}
+(()=>{const d=document.createElement('details');d.innerHTML='<summary>Templates</summary><div class="g"><div class="w m">Save the current dial as a template and load it into any dial, version or new dial later. Templates stay on this device and travel with backup files.</div><button class="w p" id="tpls">Save current look as template…</button><div class="w" id="tpll"></div></div>';$('#ctl').append(d);
+$('#tpls').onclick=()=>tplSave();
+$('#tpll').onclick=e=>{const row=e.target.closest('[data-t]'),a=e.target.closest('[data-a]');if(!row||!a)return;const t=TPLX.list.find(x=>x.id==row.dataset.t);if(!t)return;
+if(a.dataset.a=='tl')return tplLoad(t);
+menu(a,[['Load into this version',()=>tplLoad(t)],['Load as new version',()=>tplLoad(t,'ver')],['New dial from template',()=>tplLoad(t,'dial')],['Update with current look',()=>tplSave(t)],['Rename',async()=>{const n=await ask('Rename template',{val:t.name,ok:'Rename'});if(n){t.name=n;TPLX.save()}}],['Delete',async()=>{if(await ask('Delete template?',{msg:`“${esc(t.name)}” will be removed from this device.`,ok:'Delete'})){TPLX.list=TPLX.list.filter(x=>x!==t);TPLX.save()}},1]])};tplUI()})();
+// ---- checkpoint preview: ‹ › step through the timeline without touching your work
+let PVI=null;
+const pvb=document.createElement('div');pvb.id='pvb';pvb.innerHTML='<button type="button" id="pvp" aria-label="Previous">‹</button><span id="pvt"></span><button type="button" id="pvn" aria-label="Next">›</button><button type="button" id="pvr" class="p">Restore</button><button type="button" id="pvx">Exit</button>';stg.append(pvb);pvb.addEventListener('pointerdown',e=>e.stopPropagation());
+{const _r=render;render=function(){if(PVI!=null){PVI=null;stg.classList.remove('pvw');$$('#cps .cp').forEach(x=>x.classList.remove('pvw'))}_r()}}
+function cpStep(d){const v=VV(),L=v.cps;if(!L.length)return toast('Save a checkpoint first');
+let pos=PVI!=null?PVI:(()=>{const b=L.findIndex(c=>c.id==v.base);return b>=0&&same(v.work,L[b].sn)?b:L.length})();pos+=d;if(pos<0)pos=0;if(pos>=L.length)return cpExit();PVI=pos;cpShow()}
+function cpShow(){const v=VV(),c=v.cps[PVI];if(!c)return cpExit();stg.classList.add('pvw');setStage(thumb(c.sn));applyZ();$('#pvt').textContent=`${PVI+1} / ${v.cps.length} · ${c.name}`;$('#info').textContent='Previewing checkpoint — your work is untouched';$$('#cps .cp').forEach(x=>x.classList.toggle('pvw',x.dataset.c==c.id));const el=$('#cps .cp.pvw');if(el&&el.scrollIntoView)el.scrollIntoView({inline:'center',block:'nearest'})}
+function cpExit(){if(PVI==null)return;PVI=null;render()}
+$('#cpl').onclick=()=>cpStep(-1);$('#cpr').onclick=()=>cpStep(1);$('#pvp').onclick=()=>cpStep(-1);$('#pvn').onclick=()=>cpStep(1);$('#pvx').onclick=cpExit;
+$('#pvr').onclick=()=>{const c=VV().cps[PVI];const el=c&&$('#cps').querySelector(`.cp[data-c="${c.id}"]`);if(el)el.click()};
+addEventListener('keydown',e=>{if(PVI==null||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(e.key=='ArrowLeft'||e.key=='ArrowRight'){e.preventDefault();cpStep(e.key=='ArrowRight'?1:-1)}else if(e.key=='Escape')cpExit()});
+ovDraw();
+
+</script><script type="text/plain" id="app2">(()=>{
 const mq=matchMedia('(max-width:820px)'),top=$('.top'),pv=$('#pv'),zb=$('#zb'),cpw=$('#cpw'),side=$('#side'),main=$('main'),right=$('#right'),stg=$('#stage'),bar=pv.querySelector('.bar'),info=$('#info'),NS='http://www.w3.org/2000/svg';
 const mk=(t,p)=>Object.assign(document.createElement(t),p);
 // ---- skeleton: tools | canvas workspace | dock
@@ -1255,4 +1431,13 @@ addEventListener('resize',gdraw);mq.addEventListener('change',layout);
 recs.filter(r=>pinKeys.includes(r.key)).forEach(r=>setPin(r,true));
 pd.open=true;layout();
 })();
+</script>
+<script>
+// key-value store in IndexedDB (no 5 MB limit like localStorage)
+const KV={db:null,open(){return this.db||(this.db=new Promise((res,rej)=>{if(!window.indexedDB)return rej(0);const r=indexedDB.open('dialstudio-data',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}))},
+async tx(m,f){const d=await this.open();return new Promise((res,rej)=>{const t=d.transaction('kv',m),q=f(t.objectStore('kv'));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error)})},
+get:k=>KV.tx('readonly',s=>s.get(k)),set:(k,v)=>KV.tx('readwrite',s=>s.put(v,k)),del:k=>KV.tx('readwrite',s=>s.delete(k)),keys:()=>KV.tx('readonly',s=>s.getAllKeys())};
+(async()=>{try{if(navigator.storage&&navigator.storage.persist)await navigator.storage.persist()}catch(e){}
+window.__IDBPRJ=await KV.get('prj').catch(()=>null);
+for(const id of['app1','app2']){const el=document.createElement('script');el.textContent=document.getElementById(id).textContent;document.body.append(el)}})();
 </script></body></html>
