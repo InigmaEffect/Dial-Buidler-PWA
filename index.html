@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Dial Studio V4.9.7</title>
+<title>Dial Studio V4.9.8</title>
 <meta name="theme-color" content="#000000"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dial Studio">
 <link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <script>
@@ -733,9 +733,10 @@ up('#fh',f=>FH=f);up('#fm',f=>FM=f);
 const fname='dial.svg';
 // clipboard-safe SVG: viewBox starts at 0 0 (a negative viewBox origin is what makes Affinity/Illustrator misplace or rescale pasted art),
 // real-world width/height kept in mm, content shifted with one translate, and (optionally) an invisible page-sized frame so the pasted bounds are always the full page.
+const cpk=()=>{try{const v=+localStorage.getItem('dialstudio.cpk');return v>0&&isFinite(v)?v:1}catch(e){return 1}};
 function clipSvg(t,frame){const m=t.match(/^<svg[^>]*>/);if(!m)return t;const v=m[0].match(/viewBox="([^"]+)"/),wm=m[0].match(/\swidth="([0-9.]+)(mm|cm|px)?"/),hm=m[0].match(/\sheight="([0-9.]+)(mm|cm|px)?"/);if(!v||!wm||!hm)return t;
 // Affinity ignores "mm" on pasted SVG and reads every viewBox unit as a 96-DPI pixel (so 36 mm became ~10 mm). So the clipboard copy is written in true 96-DPI pixels: 1 mm = 96/25.4 px, and width/height/viewBox all agree.
-const q=v[1].trim().split(/\s+/).map(Number),mmW=parseFloat(wm[1])*(wm[2]=='cm'?10:1),k=wm[2]=='px'?parseFloat(wm[1])/q[2]:mmW*96/25.4/q[2],W=+(q[2]*k).toFixed(4),H=+(q[3]*k).toFixed(4),body=t.slice(m[0].length).replace(/<\/svg>\s*$/,'');
+const q=v[1].trim().split(/\s+/).map(Number),mmW=parseFloat(wm[1])*(wm[2]=='cm'?10:1),k=(wm[2]=='px'?parseFloat(wm[1])/q[2]:mmW*96/25.4/q[2])*cpk(),W=+(q[2]*k).toFixed(4),H=+(q[3]*k).toFixed(4),body=t.slice(m[0].length).replace(/<\/svg>\s*$/,'');
 return `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="${W}px" height="${H}px" viewBox="0 0 ${W} ${H}">${frame?`<rect id="page-frame" x="0" y="0" width="${W}" height="${H}" fill="#ffffff" fill-opacity="0" stroke="none"/>`:''}<g id="content" transform="scale(${+k.toFixed(8)}) translate(${+(-q[0]).toFixed(4)} ${+(-q[1]).toFixed(4)})">${body}</g></svg>`}
 $('#cp').onclick=async()=>{const out=clipSvg(svgText,false);try{await navigator.clipboard.writeText(out);$('#cp').textContent='Copied'}catch(e){const t=document.createElement('textarea');t.value=out;document.body.append(t);t.select();try{document.execCommand('copy');$('#cp').textContent='Copied'}catch(x){$('#cp').textContent='Copy blocked'}t.remove()}setTimeout(()=>$('#cp').textContent='Copy SVG',1600)};
 // zoom: buttons, wheel, drag-pan, pinch
@@ -1092,6 +1093,13 @@ itemsUI();
 function thumbBg(t){if(!BG.img||!BG.on)return t;try{if(BG._s!==BG.img){BG._s=BG.img;const p=BG.img.split(','),m=/:(.*?);/.exec(p[0])[1],b=atob(p[1]),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);if(BG._u)URL.revokeObjectURL(BG._u);BG._u=URL.createObjectURL(new Blob([u],{type:m}))}const o=BG.img;BG.img=BG._u;try{return withBg(t)}finally{BG.img=o}}catch(e){return t}}
 (()=>{let last='';setInterval(()=>{const j=JSON.stringify(BG);if(j===last)return;const first=!last;last=j;try{localStorage.setItem('dialstudio.bg',j)}catch(e){}if(!first&&typeof paint=='function'&&PRJ){TH={};paint()}},1200);$('#bgon').checked=BG.on!==false})();
 $('#cpe').onclick=async()=>{const t=clipSvg(svgText.replace(/<rect id="canvas-bg"[^>]*\/>/,'').replace(/<g id="dial">.*?<\/g>/g,''),true),ok=await copyText(t),b=$('#cpe');b.textContent=ok?'Copied':'Copy blocked';setTimeout(()=>b.textContent='Copy elements',1600)};
+// one-time calibration of copy size for the paste target (Affinity scales pasted SVG by its own document settings)
+(()=>{const b=document.createElement('button');b.id='cpcal';b.textContent='Calibrate copy';b.title='Fix the pasted size for Affinity';$('#cpe').after(b);
+b.onclick=async()=>{const m=svgText.match(/^<svg[^>]*\swidth="([0-9.]+)mm"/),E=m?+m[1]:0;
+const r=await ask('Calibrate copy size',{msg:`1) Click <b>Copy elements</b> and paste into Affinity.<br>2) Select the pasted group and read its <b>W</b> in mm. It should be <b>${E} mm</b>.<br>3) Type what Affinity shows below (just the number, mm), then Apply. Then copy again and paste — it will be exact. Type <b>reset</b> to clear the correction. Current correction: ×${+cpk().toFixed(5)}`,val:'',ok:'Apply'});
+if(!r||!r.trim())return;if(/^reset$/i.test(r.trim())){try{localStorage.removeItem('dialstudio.cpk')}catch(e){}toast('Copy correction cleared');return}
+const W=parseFloat(r.replace(',','.'));if(!(W>0)||!(E>0)){toast('Enter the width Affinity shows, e.g. 13.4');return}
+const k=cpk()*E/W;try{localStorage.setItem('dialstudio.cpk',String(k))}catch(e){}toast(`Copy corrected ×${+(E/W).toFixed(4)} — copy again and paste`)}})();
 function dupBase(){const b=EDIT?BASE:S,o={};for(const k in DEF)o[k]=b[k];o.dcirc=false;const L={id:uid(),name:nm(LAY,'Base copy'),on:true,s:cleanS(o)};ITM.filter(i=>!i.ly).forEach(i=>ITM.push({...clone(i),id:uid(),ly:L.id}));LAY.push(L);render();layersUI();toast('Base layer duplicated as “'+L.name+'”')}
 const newGrp=()=>{const G={id:uid(),name:nm(GRP,'Group'),on:true,x:0,y:0,rot:0,sc:1,ro:0};GRP.push(G);GSEL=G.id;return G};
 function grpPick(L,a){menu(a,[['New group with this layer',()=>{L.g=newGrp().id;render();layersUI()}],...GRP.filter(G=>G.id!=L.g).map(G=>['Move to “'+G.name+'”',()=>{L.g=G.id;render();layersUI()}]),...(L.g?[['Remove from group',()=>{L.g='';render();layersUI()}]]:[])])}
