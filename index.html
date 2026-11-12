@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Dial Studio V4.9.9</title>
+<title>Dial Studio V4.10.0</title>
 <meta name="theme-color" content="#000000"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dial Studio">
 <link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <script>
@@ -721,7 +721,7 @@ const gr=document.createElement('div');gr.className='nmg';NM.grid=gr;const b=doc
 const span=document.createElement('span');span.textContent=lab;let i;
 if(ty=='sel'){i=document.createElement('select');opt.forEach(o=>i.add(new Option(o)));i.value=def;S[id]=def;i.onchange=()=>{S[id]=i.value;sched()}}
 else if(ty=='s'||ty=='c'){i=document.createElement('input');i.type=ty=='s'?'text':'color';i.value=def;S[id]=def;i.oninput=()=>{S[id]=i.value;sched()}}
-else if(ty=='file'){i=document.createElement('input');i.type='file';i.accept='.svg';i.onchange=async()=>{try{SHPC[id.slice(0,-4)]=await loadSvg(i.files[0]);sched()}catch(e){alert('That SVG could not be read.')}}}
+else if(ty=='file'){i=document.createElement('input');i.type='file';i.accept='.svg';i.onchange=async()=>{try{setShp(id.slice(0,-4),await loadSvg(i.files[0]));sched();setTimeout(()=>typeof lyfUI=='function'&&lyfUI(),50)}catch(e){alert('That SVG could not be read.')}}}
 else return numField(f,L,span);
 EL[id]=i;L.append(span,i);return L}
 const un=document.createElement('details');un.open=false;un.innerHTML='<summary>Units &amp; fonts</summary><div class="g"><label>Units<select id="unit"><option>mm</option><option>cm</option></select></label><span></span><label class="w">Hour / rim font (.ttf .otf .woff)<input type="file" id="fh" accept=".ttf,.otf,.woff"></label><label class="w">Minute font (optional)<input type="file" id="fm" accept=".ttf,.otf,.woff"></label><label class="w" style="font-size:12px">Without an uploaded font, a built-in single-line font is used (digits and I V X L only).</label></div>';
@@ -941,8 +941,16 @@ $('#fsc').onchange=e=>{const v=VV(),n=e.target.value;v.fs=n;if(n=='version')v.fo
 $('#flib').onclick=async e=>{const b=e.target.closest('[data-d]');if(!b)return;const id=b.dataset.d,f=LIB.find(x=>x.id==id);if(!f||!await ask('Remove font?',{msg:`“${esc(f.name)}” will be deleted from this device. Looks that use it fall back to the built-in font until you add the file again.`,ok:'Remove'}))return;LIB=LIB.filter(x=>x.id!=id);delete FC[id];try{await FDB.del(id)}catch(x){}FH=FC[CUR.h]||null;FM=FC[CUR.m]||null;TH={};render();paint();fontUI()}})();
 // ---- layers: extra styles drawn on top of the base look; saved inside every look (checkpoints, versions, dials, codes)
 const Lx=id=>LAY.find(l=>l.id==id);
+// ---- per-layer fonts and custom shapes (a layer's own; falls back to the base look when not set)
+const cleanF=f=>{if(!f||typeof f!='object')return undefined;const o={};for(const k of['h','m','hn','mn'])if(typeof f[k]=='string'&&f[k])o[k]=f[k];return o.h||o.m?o:undefined};
+const cleanSh=sh=>{if(!sh||typeof sh!='object')return undefined;const o={};for(const k in sh)if(k in WL&&Array.isArray(sh[k]))o[k]=sh[k].filter(c=>c&&/^[MLZ]$/.test(c.t)&&Array.isArray(c.p));return Object.keys(o).length?o:undefined};
+const LFP=new Set();
+function layerFace(id,nm){id=rid(id,nm);if(!id)return null;if(FC[id])return FC[id];if(!LFP.has(id)&&LIB.some(l=>l.id==id)){LFP.add(id);ensure(id).then(()=>{LFP.delete(id);TH={};render()}).catch(()=>LFP.delete(id))}return null}
+function withF(f,fn){if(!f||(!f.h&&!f.m))return fn();const a=[FH,FM];try{if(f.h){const x=layerFace(f.h,f.hn);if(x){FH=x;if(!f.m)FM=null}}if(f.m){const x=layerFace(f.m,f.mn);if(x)FM=x}return fn()}finally{FH=a[0];FM=a[1]}}
+function withSh(l,fn){if(!l||!l.sh)return fn();const a={...SHPC};try{Object.assign(SHPC,l.sh);return fn()}finally{for(const k in SHPC)delete SHPC[k];Object.assign(SHPC,a)}}
+const setShp=(k,cm)=>{if(EDIT){const L=Lx(EDIT);if(L){(L.sh=L.sh||{})[k]=cm;return}}SHPC[k]=cm};
 const cleanS=s=>{const o={};for(const k in (s||{}))if(k in DEF&&typeof s[k]==typeof DEF[k]&&(typeof s[k]!='number'||isFinite(s[k])))o[k]=s[k];if(o.style=='Markers + Minutes')o.style='Markers + Subdivisions';return o};
-function setLay(sn){LAY=((sn&&sn.ly)||[]).filter(l=>l&&typeof l=='object').map(l=>({id:String(l.id||uid()),name:String(l.name||'Layer'),on:l.on!==false,g:String(l.g||''),s:cleanS(l.s)}));GRP=cleanG(sn&&sn.gr);GSEL=null;BOFF=sn&&sn.bo?1:0;ITM=cleanIt(sn&&sn.it);SEL=null;EDIT=null;BASE=null}
+function setLay(sn){LAY=((sn&&sn.ly)||[]).filter(l=>l&&typeof l=='object').map(l=>({id:String(l.id||uid()),name:String(l.name||'Layer'),on:l.on!==false,g:String(l.g||''),s:cleanS(l.s),f:cleanF(l.f),sh:cleanSh(l.sh)}));GRP=cleanG(sn&&sn.gr);GSEL=null;BOFF=sn&&sn.bo?1:0;ITM=cleanIt(sn&&sn.it);SEL=null;EDIT=null;BASE=null}
 const lyDiff=()=>{const o={};for(const k in DEF)if(r5(S[k])!==r5(BASE[k]))o[k]=r5(S[k]);return o};
 const lyTag=()=>EDIT?' · editing '+((Lx(EDIT)||{}).name||'layer'):'';
 function withS(o,fn){const a={...S};try{Object.assign(S,o);return fn()}finally{Object.assign(S,a)}}
@@ -987,7 +995,7 @@ if(bs.cw>0||bs.ch>0){const W0=parseFloat(page.match(/width=.([0-9.]+)mm/)[1]),w=
 let out=`<g id="base"${tf(bs)}>${BOFF?'':inner(bsvg,bs)}${itemsSvg('',bs)}</g>`,k=0;
 for(const l of LAY){const G=l.g&&GRP.find(g=>g.id==l.g);if(!l.on||(G&&G.on===false))continue;k++;const o=l.id==EDIT?{...S}:{...bs,...l.s},ro=G?+G.ro||0:0;if(ro)o.ring=(+o.ring||0)+ro;
 const sv=ro?ITM.filter(i=>i.ly==l.id).map(i=>[i,i.x,i.y]):[];sv.forEach(([i,x,y])=>{const r=Math.hypot(x,y);if(r>1e-6){i.x=x+ro*x/r;i.y=y+ro*y/r}});let t;
-try{t=inner(withS(o,build1),o).replace(/ id=.(markers|numerals|text)./g,(m,a)=>` id="${a}-L${k}"`)+itemsSvg(l.id,o)}finally{sv.forEach(([i,x,y])=>{i.x=x;i.y=y})}
+try{t=withF(l.f,()=>withSh(l,()=>inner(withS(o,build1),o).replace(/ id=.(markers|numerals|text)./g,(m,a)=>` id="${a}-L${k}"`)+itemsSvg(l.id,o)))}finally{sv.forEach(([i,x,y])=>{i.x=x;i.y=y})}
 const ls=`<g id="layer-${k}-${l.name.replace(/[^\w-]+/g,'_')}"${tf(o)}>${t}</g>`;
 out+=G?`<g id="group-${G.name.replace(/[^\w-]+/g,'_')}" transform="translate(${f3x(G.x)} ${f3x(-G.y)}) rotate(${f3x(-G.rot)}) scale(${f3x(G.sc||1)})">${ls}</g>`:ls}
 return page+out+'</svg>'}
@@ -998,7 +1006,20 @@ function layersUI(){const el=$('#lylist');if(!el)return;const bs=(EDIT?BASE:S).s
 const row=(id,n,sty,on,ed)=>`<div class='ly${ed?' ed':''}' data-i='${id}'><button class='ic' data-a='eye' aria-label='Show or hide'>${on?'●':'○'}</button><div class='nm' data-a='edit'><b>${esc(n)}</b><small>${esc(sty)}${ed?' · editing':''}</small></div>${id?`<button class='ic' data-a='more' aria-label='Layer options'>⋯</button>`:''}</div>`;
 const lr=l=>row(l.id,l.name,l.id==EDIT?S.style:(l.s.style||bs),l.on,l.id==EDIT),grow=G=>`<div class='ly gr${GSEL==G.id?' ed':''}' data-g='${G.id}'><button class='ic' data-a='geye' aria-label='Show or hide group'>${G.on!==false?'●':'○'}</button><div class='nm' data-a='gsel'><b>▸ ${esc(G.name)}</b><small>group · ${LAY.filter(l=>l.g==G.id).length} layers</small></div><button class='ic' data-a='gmore' aria-label='Group options'>⋯</button></div>`;
 el.innerHTML=row('','Base layer',bs,!BOFF,!EDIT)+GRP.map(G=>grow(G)+LAY.filter(l=>l.g==G.id).map(l=>lr(l).replace("class='ly","class='ly in")).join('')).join('')+LAY.filter(l=>!GRP.some(G=>G.id==l.g)).map(lr).join('');if(typeof grpEd=='function')grpEd();
-const b=$('#lyb');b.hidden=!EDIT;if(typeof itemsUI=='function')itemsUI();b.firstElementChild.textContent=EDIT?'Editing “'+((Lx(EDIT)||{}).name||'layer')+'” — changes only affect this layer':''}
+const b=$('#lyb');b.hidden=!EDIT;if(typeof itemsUI=='function')itemsUI();lyfUI();b.firstElementChild.textContent=EDIT?'Editing “'+((Lx(EDIT)||{}).name||'layer')+'” — changes only affect this layer':''}
+
+// per-layer font / shape panel (inside the "Editing …" box)
+const SHN={m:'Marker',tr:'Triangle',q:'Quarter marker',mn:'Subdivision'};
+function lyfUI(){let b=$('#lyf');if(!b){b=document.createElement('div');b.id='lyf';$('#lyb').append(b)}
+const L=EDIT&&Lx(EDIT);if(!L){b.innerHTML='';return}
+const f=L.f||{},opt=(cur,first)=>`<option value=''>${first}</option>`+LIB.map(x=>`<option value='${x.id}'${rid(cur)==x.id?' selected':''}>${esc(x.name)}</option>`).join('');
+const own=L.sh||{},keys=Object.keys(own);
+b.innerHTML=`<div class="m" style="margin-top:8px"><b>Font for this layer</b></div><label>Hour / rim font<select id="lyfh">${opt(f.h,'Same as base look')}</select></label><label>Minute font<select id="lyfm">${opt(f.m,f.h?'Same as this layer’s hour font':'Same as base look')}</select></label>
+<div class="m" style="margin-top:8px"><b>Custom shapes in this layer</b></div><div class="m">${keys.length?keys.map(k=>`${SHN[k]||k} <button data-rm="${k}" type="button">Remove</button>`).join(' · '):'None of its own — upload an SVG under Markers / objects (shape “Custom SVG”) and it belongs to this layer only. Until then it uses the base look’s shape.'}</div>`;
+const set=(k,v)=>{const g=L.f||(L.f={});if(v){g[k]=v;g[k+'n']=(LIB.find(x=>x.id==v)||{}).name}else{delete g[k];delete g[k+'n']}if(!g.h&&!g.m)delete L.f;if(v)ensure(v).catch(()=>{});TH={};render();paint();lyfUI()};
+$('#lyfh').onchange=e=>set('h',e.target.value);$('#lyfm').onchange=e=>set('m',e.target.value);
+b.querySelectorAll('[data-rm]').forEach(x=>x.onclick=()=>{delete L.sh[x.dataset.rm];if(!Object.keys(L.sh).length)delete L.sh;render();lyfUI()})}
+
 const mvL=(L,d)=>{const i=LAY.indexOf(L),j=i+d;if(j<0||j>=LAY.length)return;LAY.splice(i,1);LAY.splice(j,0,L);render();layersUI()};
 (()=>{const d=document.createElement('details');d.innerHTML=`<summary>Layers</summary><div class='g'><div class='w m'>Stack extra styles on top of the base look, e.g. Markers + KonTiki. Tap a layer to edit it. Layers are saved with every look.</div><div class='w' id='lylist'></div><button class='w' id='lyadd'>+ Add layer</button></div>`;
 ctl.firstElementChild.after(d);
