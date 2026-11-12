@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Dial Studio V4.9.6</title>
+<title>Dial Studio V4.9.7</title>
 <meta name="theme-color" content="#000000"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dial Studio">
 <link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <script>
@@ -733,9 +733,10 @@ up('#fh',f=>FH=f);up('#fm',f=>FM=f);
 const fname='dial.svg';
 // clipboard-safe SVG: viewBox starts at 0 0 (a negative viewBox origin is what makes Affinity/Illustrator misplace or rescale pasted art),
 // real-world width/height kept in mm, content shifted with one translate, and (optionally) an invisible page-sized frame so the pasted bounds are always the full page.
-function clipSvg(t,frame){const m=t.match(/^<svg[^>]*>/);if(!m)return t;const v=m[0].match(/viewBox="([^"]+)"/),wm=m[0].match(/\swidth="([^"]+)"/),hm=m[0].match(/\sheight="([^"]+)"/);if(!v||!wm||!hm)return t;
-const q=v[1].trim().split(/\s+/).map(Number),body=t.slice(m[0].length).replace(/<\/svg>\s*$/,'');
-return `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="${wm[1]}" height="${hm[1]}" viewBox="0 0 ${q[2]} ${q[3]}">${frame?`<rect id="page-frame" x="0" y="0" width="${q[2]}" height="${q[3]}" fill="#ffffff" fill-opacity="0" stroke="none"/>`:''}<g id="content" transform="translate(${+(-q[0]).toFixed(4)} ${+(-q[1]).toFixed(4)})">${body}</g></svg>`}
+function clipSvg(t,frame){const m=t.match(/^<svg[^>]*>/);if(!m)return t;const v=m[0].match(/viewBox="([^"]+)"/),wm=m[0].match(/\swidth="([0-9.]+)(mm|cm|px)?"/),hm=m[0].match(/\sheight="([0-9.]+)(mm|cm|px)?"/);if(!v||!wm||!hm)return t;
+// Affinity ignores "mm" on pasted SVG and reads every viewBox unit as a 96-DPI pixel (so 36 mm became ~10 mm). So the clipboard copy is written in true 96-DPI pixels: 1 mm = 96/25.4 px, and width/height/viewBox all agree.
+const q=v[1].trim().split(/\s+/).map(Number),mmW=parseFloat(wm[1])*(wm[2]=='cm'?10:1),k=wm[2]=='px'?parseFloat(wm[1])/q[2]:mmW*96/25.4/q[2],W=+(q[2]*k).toFixed(4),H=+(q[3]*k).toFixed(4),body=t.slice(m[0].length).replace(/<\/svg>\s*$/,'');
+return `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="${W}px" height="${H}px" viewBox="0 0 ${W} ${H}">${frame?`<rect id="page-frame" x="0" y="0" width="${W}" height="${H}" fill="#ffffff" fill-opacity="0" stroke="none"/>`:''}<g id="content" transform="scale(${+k.toFixed(8)}) translate(${+(-q[0]).toFixed(4)} ${+(-q[1]).toFixed(4)})">${body}</g></svg>`}
 $('#cp').onclick=async()=>{const out=clipSvg(svgText,false);try{await navigator.clipboard.writeText(out);$('#cp').textContent='Copied'}catch(e){const t=document.createElement('textarea');t.value=out;document.body.append(t);t.select();try{document.execCommand('copy');$('#cp').textContent='Copied'}catch(x){$('#cp').textContent='Copy blocked'}t.remove()}setTimeout(()=>$('#cp').textContent='Copy SVG',1600)};
 // zoom: buttons, wheel, drag-pan, pinch
 const Z={s:1,x:0,y:0},stg=$('#stage'),P=new Map();
