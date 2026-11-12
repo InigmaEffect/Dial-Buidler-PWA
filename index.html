@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Dial Studio V4.9.3</title>
+<title>Dial Studio V4.9.4</title>
 <meta name="theme-color" content="#000000"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dial Studio">
 <link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <script>
@@ -1130,29 +1130,34 @@ pop.addEventListener('dblclick',e=>{const it=e.target.closest('.fi');if(it){choo
 $('#fph').onclick=e=>{e.preventDefault();POP&&POP.k=='h'?fpClose():fpOpen('h',e.currentTarget)};$('#fpm').onclick=e=>{e.preventDefault();POP&&POP.k=='m'?fpClose():fpOpen('m',e.currentTarget)};
 addEventListener('keydown',e=>{if(e.key=='Escape')fpClose()});fpLab();
 // ---- linked folder: read-only handle kept on this device; new fonts appear automatically
-const LK={h:null,n:0,t:0,busy:0,ok:1};
+const WINP='C:\\Users\\Owais Majid\\AppData\\Local\\Microsoft\\Windows\\Fonts';
+// two independent linked folders: your own pick, plus the Windows per-user fonts folder (re-read live, so newly installed fonts appear on their own)
+const LKS=[{id:'lkbox',key:'dir',seen:'dialstudio.lseen',pid:'dialfonts',title:'Linked folder',btn:'Link a fonts folder (read-only, auto-updates)',poll:15000,stale:20000},
+{id:'lkwin',key:'dirwin',seen:'dialstudio.lseenwin',pid:'winfonts',title:'Windows fonts',btn:'Link Windows fonts folder (live)',poll:4000,stale:6000,hint:WINP}].map(o=>({...o,h:null,n:0,t:0,busy:0,ok:1}));
 const HDB=()=>new Promise((res,rej)=>{const r=indexedDB.open('dialstudio-handles',1);r.onupgradeneeded=()=>r.result.createObjectStore('h');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
 const hGet=async k=>{try{const d=await HDB();return await new Promise(res=>{const q=d.transaction('h').objectStore('h').get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>res(null)})}catch(e){return null}};
 const hPut=async(k,v)=>{const d=await HDB();return new Promise((res,rej)=>{const t=d.transaction('h','readwrite');t.objectStore('h')[v?'put':'delete'](...(v?[v,k]:[k]));t.oncomplete=res;t.onerror=()=>rej(t.error)})};
-function lkUI(){const b=$('#lkbox');if(!b)return;
-if(!window.showDirectoryPicker){b.innerHTML='<div class="m">Linking a folder (auto-updating) needs Chrome or Edge on desktop. Use “Add a whole folder” above in other browsers.</div>';return}
-if(!LK.h){b.innerHTML='<button id="lkgo" class="w">Link a fonts folder (read-only, auto-updates)</button>';$('#lkgo').onclick=lkLink;return}
-const t=LK.t?new Date(LK.t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'—';
-b.innerHTML=`<div class="m">Linked: <b>${esc(LK.h.name)}</b> · ${LK.n} fonts · checked ${t}${LK.busy?' · scanning…':''}</div><div style="display:flex;gap:8px;flex-wrap:wrap">${LK.ok?'':'<button class="p" id="lkre">Reconnect folder</button>'}<button id="lkrs">Rescan now</button><button id="lkun">Unlink</button></div>`;
-const re=$('#lkre');if(re)re.onclick=()=>lkScan(1);$('#lkrs').onclick=()=>lkScan(1,1);$('#lkun').onclick=async()=>{LK.h=null;try{await hPut('dir',null)}catch(e){}localStorage.removeItem('dialstudio.lseen');lkUI()}}
-async function lkLink(){try{const h=await showDirectoryPicker({id:'dialfonts',mode:'read'});LK.h=h;await hPut('dir',h);lkUI();await lkScan(1,1)}catch(e){if(e&&e.name!='AbortError')toast(e.name=='SecurityError'?'This view blocks folder access — open the page in its own browser tab':'Couldn’t link that folder')}}
-async function lkScan(manual,force){if(!LK.h||LK.busy)return;LK.busy=1;lkUI();try{
-if(await LK.h.queryPermission({mode:'read'})!='granted'){if(!manual||await LK.h.requestPermission({mode:'read'})!='granted'){LK.ok=0;return}}LK.ok=1;
-let seen={};if(!force)try{seen=JSON.parse(localStorage.getItem('dialstudio.lseen')||'{}')}catch(e){}
+function lkUI(L){if(!L){LKS.forEach(lkUI);return}const b=$('#'+L.id);if(!b)return;
+if(!window.showDirectoryPicker){b.innerHTML=L.key=='dir'?'<div class="m">Linking a folder (auto-updating) needs Chrome or Edge on desktop. Use “Add a whole folder” above in other browsers.</div>':'';return}
+const hint=L.hint?`<div class="m" style="word-break:break-all">In the folder dialog, paste this into the address bar: <code>${esc(L.hint)}</code> <button id="${L.id}cp" type="button">Copy path</button></div>`:'';
+if(!L.h){b.innerHTML=`<button id="${L.id}go" class="w">${L.btn}</button>${hint}`;$('#'+L.id+'go').onclick=()=>lkLink(L);const cp=$('#'+L.id+'cp');if(cp)cp.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(L.hint).then(()=>toast('Path copied'),()=>toast('Couldn’t copy — select the path and copy it'))};return}
+const t=L.t?new Date(L.t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'—';
+b.innerHTML=`<div class="m">${L.title}: <b>${esc(L.h.name)}</b> · ${L.n} fonts · checked ${t}${L.busy?' · scanning…':''}</div><div style="display:flex;gap:8px;flex-wrap:wrap">${L.ok?'':`<button class="p" id="${L.id}re">Reconnect folder</button>`}<button id="${L.id}rs">Rescan now</button><button id="${L.id}un">Unlink</button></div>`;
+const re=$('#'+L.id+'re');if(re)re.onclick=()=>lkScan(L,1);$('#'+L.id+'rs').onclick=()=>lkScan(L,1,1);$('#'+L.id+'un').onclick=async()=>{L.h=null;try{await hPut(L.key,null)}catch(e){}localStorage.removeItem(L.seen);lkUI(L)}}
+async function lkLink(L){try{const h=await showDirectoryPicker({id:L.pid,mode:'read'});L.h=h;await hPut(L.key,h);lkUI(L);await lkScan(L,1,1)}catch(e){if(e&&e.name!='AbortError')toast(e.name=='SecurityError'?'This view blocks folder access — open the page in its own browser tab':'Couldn’t link that folder');else if(e&&/system/i.test(e.message||''))toast('Chrome refused that folder as a system folder')}}
+async function lkScan(L,manual,force){if(!L.h||L.busy)return;L.busy=1;lkUI(L);try{
+if(await L.h.queryPermission({mode:'read'})!='granted'){if(!manual||await L.h.requestPermission({mode:'read'})!='granted'){L.ok=0;return}}L.ok=1;
+let seen={};if(!force)try{seen=JSON.parse(localStorage.getItem(L.seen)||'{}')}catch(e){}
 let add=0,tot=0,n=0;const walk=async(dir,path)=>{for await(const[nm,e]of dir.entries()){if(e.kind=='directory'){await walk(e,path+'/'+nm);continue}if(!/\.(ttf|otf|woff)$/i.test(nm))continue;tot++;
 const fl=await e.getFile(),key=path+'/'+nm,sig=fl.size+':'+fl.lastModified;if(seen[key]==sig)continue;
-try{const before=LIB.length;await addFont(fl,0,path.split('/').join(' › '));if(LIB.length>before)add++}catch(x){}seen[key]=sig;if(++n%20==0){toast(`Reading linked fonts… ${n}`);await new Promise(r=>setTimeout(r))}}};
-await walk(LK.h,LK.h.name);try{localStorage.setItem('dialstudio.lseen',JSON.stringify(seen))}catch(e){}
-LK.n=tot;LK.t=Date.now();if(add){fontUI();if(POP)fpList();toast(`${add} new font${add>1?'s':''} found in the linked folder`)}else if(manual)toast('Folder is up to date')}
-catch(e){toast('Couldn’t read the linked folder')}finally{LK.busy=0;lkUI()}}
-(async()=>{const bx=document.createElement('div');bx.id='lkbox';bx.className='w';$('#ffol').closest('label').after(bx);lkUI();
-if(window.showDirectoryPicker){LK.h=await hGet('dir');if(LK.h)lkScan(0);lkUI();
-setInterval(()=>{if(!document.hidden&&LK.h&&Date.now()-LK.t>20000)lkScan(0)},10000);document.addEventListener('visibilitychange',()=>{if(!document.hidden&&LK.h&&Date.now()-LK.t>8000)lkScan(0)})}})();
+try{const before=LIB.length;await addFont(fl,0,path.split('/').join(' › '));if(LIB.length>before)add++}catch(x){}seen[key]=sig;if(++n%20==0){toast(`Reading ${L.title.toLowerCase()}… ${n}`);await new Promise(r=>setTimeout(r))}}};
+await walk(L.h,L.h.name);try{localStorage.setItem(L.seen,JSON.stringify(seen))}catch(e){}
+L.n=tot;L.t=Date.now();if(add){fontUI();if(POP)fpList();toast(`${add} new font${add>1?'s':''} found · ${L.title.toLowerCase()}`)}else if(manual)toast('Folder is up to date')}
+catch(e){toast('Couldn’t read '+L.title.toLowerCase())}finally{L.busy=0;lkUI(L)}}
+(async()=>{let prev=$('#ffol').closest('label');for(const L of LKS){const bx=document.createElement('div');bx.id=L.id;bx.className='w';prev.after(bx);prev=bx}lkUI();
+if(window.showDirectoryPicker){for(const L of LKS){L.h=await hGet(L.key);if(L.h)lkScan(L,0)}lkUI();
+const tick=()=>{if(document.hidden)return;for(const L of LKS)if(L.h&&Date.now()-L.t>L.stale)lkScan(L,0)};
+setInterval(tick,2000);document.addEventListener('visibilitychange',tick);window.addEventListener('focus',tick)}})();
 // smooth accordion + slider fill
 $$('#ctl summary').forEach(s=>s.addEventListener('click',e=>{e.preventDefault();const d=s.parentNode,g=d.querySelector('.g');if(!g||d.dataset.a)return;d.dataset.a=1;g.style.overflow='hidden';
 const o={duration:420,easing:'cubic-bezier(.32,.72,0,1)'},z={height:'0px',opacity:0,paddingTop:'0px',paddingBottom:'0px'};
