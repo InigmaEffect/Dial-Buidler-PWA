@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Dial Studio V4.9.5</title>
+<title>Dial Studio V4.9.6</title>
 <meta name="theme-color" content="#000000"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dial Studio">
 <link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <script>
@@ -731,7 +731,12 @@ $('#unit').onchange=e=>{const o=U.v;U.v=e.target.value=='cm'?10:1;for(const id i
 const up=(sel,set)=>$(sel).onchange=e=>{const f=e.target.files[0];if(!f)return;f.arrayBuffer().then(b=>{try{set(OT(opentype.parse(b)));TH={};render();paint()}catch(x){alert('That font could not be read. Use .ttf, .otf or .woff.')}})};
 up('#fh',f=>FH=f);up('#fm',f=>FM=f);
 const fname='dial.svg';
-$('#cp').onclick=async()=>{try{await navigator.clipboard.writeText(svgText);$('#cp').textContent='Copied'}catch(e){const t=document.createElement('textarea');t.value=svgText;document.body.append(t);t.select();try{document.execCommand('copy');$('#cp').textContent='Copied'}catch(x){$('#cp').textContent='Copy blocked'}t.remove()}setTimeout(()=>$('#cp').textContent='Copy SVG',1600)};
+// clipboard-safe SVG: viewBox starts at 0 0 (a negative viewBox origin is what makes Affinity/Illustrator misplace or rescale pasted art),
+// real-world width/height kept in mm, content shifted with one translate, and (optionally) an invisible page-sized frame so the pasted bounds are always the full page.
+function clipSvg(t,frame){const m=t.match(/^<svg[^>]*>/);if(!m)return t;const v=m[0].match(/viewBox="([^"]+)"/),wm=m[0].match(/\swidth="([^"]+)"/),hm=m[0].match(/\sheight="([^"]+)"/);if(!v||!wm||!hm)return t;
+const q=v[1].trim().split(/\s+/).map(Number),body=t.slice(m[0].length).replace(/<\/svg>\s*$/,'');
+return `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="${wm[1]}" height="${hm[1]}" viewBox="0 0 ${q[2]} ${q[3]}">${frame?`<rect id="page-frame" x="0" y="0" width="${q[2]}" height="${q[3]}" fill="#ffffff" fill-opacity="0" stroke="none"/>`:''}<g id="content" transform="translate(${+(-q[0]).toFixed(4)} ${+(-q[1]).toFixed(4)})">${body}</g></svg>`}
+$('#cp').onclick=async()=>{const out=clipSvg(svgText,false);try{await navigator.clipboard.writeText(out);$('#cp').textContent='Copied'}catch(e){const t=document.createElement('textarea');t.value=out;document.body.append(t);t.select();try{document.execCommand('copy');$('#cp').textContent='Copied'}catch(x){$('#cp').textContent='Copy blocked'}t.remove()}setTimeout(()=>$('#cp').textContent='Copy SVG',1600)};
 // zoom: buttons, wheel, drag-pan, pinch
 const Z={s:1,x:0,y:0},stg=$('#stage'),P=new Map();
 function applyZ(){fineTag();const v=$('#stage>svg:not(#gz)');if(v){v.style.transformOrigin='0 0';v.style.transform=`translate(${Z.x}px,${Z.y}px) scale(${Z.s})`}}
@@ -1085,7 +1090,7 @@ itemsUI();
 // ---- V4.6 additions
 function thumbBg(t){if(!BG.img||!BG.on)return t;try{if(BG._s!==BG.img){BG._s=BG.img;const p=BG.img.split(','),m=/:(.*?);/.exec(p[0])[1],b=atob(p[1]),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);if(BG._u)URL.revokeObjectURL(BG._u);BG._u=URL.createObjectURL(new Blob([u],{type:m}))}const o=BG.img;BG.img=BG._u;try{return withBg(t)}finally{BG.img=o}}catch(e){return t}}
 (()=>{let last='';setInterval(()=>{const j=JSON.stringify(BG);if(j===last)return;const first=!last;last=j;try{localStorage.setItem('dialstudio.bg',j)}catch(e){}if(!first&&typeof paint=='function'&&PRJ){TH={};paint()}},1200);$('#bgon').checked=BG.on!==false})();
-$('#cpe').onclick=async()=>{const t=svgText.replace(/<rect id="canvas-bg"[^>]*\/>/,'').replace(/<g id="dial">.*?<\/g>/g,''),ok=await copyText(t),b=$('#cpe');b.textContent=ok?'Copied':'Copy blocked';setTimeout(()=>b.textContent='Copy elements',1600)};
+$('#cpe').onclick=async()=>{const t=clipSvg(svgText.replace(/<rect id="canvas-bg"[^>]*\/>/,'').replace(/<g id="dial">.*?<\/g>/g,''),true),ok=await copyText(t),b=$('#cpe');b.textContent=ok?'Copied':'Copy blocked';setTimeout(()=>b.textContent='Copy elements',1600)};
 function dupBase(){const b=EDIT?BASE:S,o={};for(const k in DEF)o[k]=b[k];o.dcirc=false;const L={id:uid(),name:nm(LAY,'Base copy'),on:true,s:cleanS(o)};ITM.filter(i=>!i.ly).forEach(i=>ITM.push({...clone(i),id:uid(),ly:L.id}));LAY.push(L);render();layersUI();toast('Base layer duplicated as “'+L.name+'”')}
 const newGrp=()=>{const G={id:uid(),name:nm(GRP,'Group'),on:true,x:0,y:0,rot:0,sc:1,ro:0};GRP.push(G);GSEL=G.id;return G};
 function grpPick(L,a){menu(a,[['New group with this layer',()=>{L.g=newGrp().id;render();layersUI()}],...GRP.filter(G=>G.id!=L.g).map(G=>['Move to “'+G.name+'”',()=>{L.g=G.id;render();layersUI()}]),...(L.g?[['Remove from group',()=>{L.g='';render();layersUI()}]]:[])])}
