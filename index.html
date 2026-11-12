@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Dial Studio V4.9.4</title>
+<title>Dial Studio V4.9.5</title>
 <meta name="theme-color" content="#000000"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dial Studio">
 <link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <script>
@@ -1138,12 +1138,15 @@ const HDB=()=>new Promise((res,rej)=>{const r=indexedDB.open('dialstudio-handles
 const hGet=async k=>{try{const d=await HDB();return await new Promise(res=>{const q=d.transaction('h').objectStore('h').get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>res(null)})}catch(e){return null}};
 const hPut=async(k,v)=>{const d=await HDB();return new Promise((res,rej)=>{const t=d.transaction('h','readwrite');t.objectStore('h')[v?'put':'delete'](...(v?[v,k]:[k]));t.oncomplete=res;t.onerror=()=>rej(t.error)})};
 function lkUI(L){if(!L){LKS.forEach(lkUI);return}const b=$('#'+L.id);if(!b)return;
-if(!window.showDirectoryPicker){b.innerHTML=L.key=='dir'?'<div class="m">Linking a folder (auto-updating) needs Chrome or Edge on desktop. Use “Add a whole folder” above in other browsers.</div>':'';return}
 const hint=L.hint?`<div class="m" style="word-break:break-all">In the folder dialog, paste this into the address bar: <code>${esc(L.hint)}</code> <button id="${L.id}cp" type="button">Copy path</button></div>`:'';
+if(!window.showDirectoryPicker){const t=L.t?new Date(L.t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';b.innerHTML=`<button id="${L.id}go" class="w">${L.title}: read a folder now</button><div class="m">This browser can’t watch a folder live. Pick the folder again whenever you want to refresh — only new fonts are added.${L.n?` Last read ${t}: ${L.n} fonts.`:''}</div>${hint}`;$('#'+L.id+'go').onclick=()=>lkPick(L);const cp=$('#'+L.id+'cp');if(cp)cp.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(L.hint).then(()=>toast('Path copied'),()=>toast('Couldn’t copy'))};return}
 if(!L.h){b.innerHTML=`<button id="${L.id}go" class="w">${L.btn}</button>${hint}`;$('#'+L.id+'go').onclick=()=>lkLink(L);const cp=$('#'+L.id+'cp');if(cp)cp.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(L.hint).then(()=>toast('Path copied'),()=>toast('Couldn’t copy — select the path and copy it'))};return}
 const t=L.t?new Date(L.t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'—';
 b.innerHTML=`<div class="m">${L.title}: <b>${esc(L.h.name)}</b> · ${L.n} fonts · checked ${t}${L.busy?' · scanning…':''}</div><div style="display:flex;gap:8px;flex-wrap:wrap">${L.ok?'':`<button class="p" id="${L.id}re">Reconnect folder</button>`}<button id="${L.id}rs">Rescan now</button><button id="${L.id}un">Unlink</button></div>`;
 const re=$('#'+L.id+'re');if(re)re.onclick=()=>lkScan(L,1);$('#'+L.id+'rs').onclick=()=>lkScan(L,1,1);$('#'+L.id+'un').onclick=async()=>{L.h=null;try{await hPut(L.key,null)}catch(e){}localStorage.removeItem(L.seen);lkUI(L)}}
+function lkPick(L){const i=document.createElement('input');i.type='file';i.webkitdirectory=true;i.multiple=true;i.onchange=async()=>{const fs=[...i.files].filter(f=>/\.(ttf|otf|woff)$/i.test(f.name));let seen={};try{seen=JSON.parse(localStorage.getItem(L.seen)||'{}')}catch(e){}
+let add=0,n=0;L.busy=1;lkUI(L);for(const fl of fs){const rp=fl.webkitRelativePath||fl.name,sig=fl.size+':'+fl.lastModified;if(seen[rp]==sig)continue;try{const before=LIB.length;await addFont(fl,0,rp.split('/').slice(0,-1).join(' › '));if(LIB.length>before)add++}catch(x){}seen[rp]=sig;if(++n%20==0){toast(`Reading fonts… ${n}`);await new Promise(r=>setTimeout(r))}}
+try{localStorage.setItem(L.seen,JSON.stringify(seen))}catch(e){}L.n=fs.length;L.t=Date.now();L.busy=0;fontUI();if(POP)fpList();toast(add?`${add} new font${add>1?'s':''} added`:'No new fonts found');lkUI(L)};i.click()}
 async function lkLink(L){try{const h=await showDirectoryPicker({id:L.pid,mode:'read'});L.h=h;await hPut(L.key,h);lkUI(L);await lkScan(L,1,1)}catch(e){if(e&&e.name!='AbortError')toast(e.name=='SecurityError'?'This view blocks folder access — open the page in its own browser tab':'Couldn’t link that folder');else if(e&&/system/i.test(e.message||''))toast('Chrome refused that folder as a system folder')}}
 async function lkScan(L,manual,force){if(!L.h||L.busy)return;L.busy=1;lkUI(L);try{
 if(await L.h.queryPermission({mode:'read'})!='granted'){if(!manual||await L.h.requestPermission({mode:'read'})!='granted'){L.ok=0;return}}L.ok=1;
@@ -1158,6 +1161,28 @@ catch(e){toast('Couldn’t read '+L.title.toLowerCase())}finally{L.busy=0;lkUI(L
 if(window.showDirectoryPicker){for(const L of LKS){L.h=await hGet(L.key);if(L.h)lkScan(L,0)}lkUI();
 const tick=()=>{if(document.hidden)return;for(const L of LKS)if(L.h&&Date.now()-L.t>L.stale)lkScan(L,0)};
 setInterval(tick,2000);document.addEventListener('visibilitychange',tick);window.addEventListener('focus',tick)}})();
+// ---- installed system fonts, read live (covers C:\Windows\Fonts too, which Chrome won't let you pick as a folder)
+const SYS={on:localStorage.getItem('dialstudio.syson')=='1',n:0,t:0,busy:0};
+const sysSeen=()=>{try{return new Set(JSON.parse(localStorage.getItem('dialstudio.sysseen')||'[]'))}catch(e){return new Set}};
+const sysSave=st=>{try{localStorage.setItem('dialstudio.sysseen',JSON.stringify([...st]))}catch(e){}};
+function sysUI(){const b=$('#lksys');if(!b)return;
+if(!window.queryLocalFonts){b.innerHTML='';return}
+const t=SYS.t?new Date(SYS.t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'—';
+b.innerHTML=`<div class="m"><b>Installed fonts (system-wide, live)</b> — includes C:\\Windows\\Fonts and your per-user fonts.${SYS.on?` Watching · ${SYS.n} installed · checked ${t}${SYS.busy?' · reading…':''}`:''}</div><div style="display:flex;gap:8px;flex-wrap:wrap">${SYS.on?'<button id="sysrs">Check now</button><button id="sysoff">Stop watching</button>':'<button class="p" id="syson">Watch installed fonts (adds new installs)</button>'}<button id="sysimp">Import installed fonts by name…</button></div>`;
+const g=id=>$('#'+id);if(g('syson'))g('syson').onclick=sysEnable;if(g('sysrs'))g('sysrs').onclick=()=>sysScan(1);if(g('sysoff'))g('sysoff').onclick=()=>{SYS.on=0;localStorage.setItem('dialstudio.syson','0');sysUI()};g('sysimp').onclick=sysImport}
+async function sysEnable(){try{const l=await queryLocalFonts();sysSave(new Set(l.map(f=>f.postscriptName)));SYS.n=l.length;SYS.on=1;SYS.t=Date.now();localStorage.setItem('dialstudio.syson','1');toast(`Watching ${l.length} installed fonts — new installs will be added automatically`);sysUI()}catch(e){toast('Permission to read installed fonts was declined')}}
+async function sysAdd(list,seen){let add=0,n=0;for(const f of list){try{const bl=await f.blob(),before=LIB.length;await addFont(new File([bl],f.postscriptName+'.ttf'),0,'Installed fonts');if(LIB.length>before)add++}catch(x){}seen.add(f.postscriptName);if(++n%10==0){toast(`Reading installed fonts… ${n}/${list.length}`);await new Promise(r=>setTimeout(r))}}return add}
+async function sysScan(manual){if(!SYS.on||SYS.busy)return;if(!manual){try{if((await navigator.permissions.query({name:'local-fonts'})).state!='granted')return}catch(e){return}}
+SYS.busy=1;sysUI();try{const l=await queryLocalFonts(),seen=sysSeen(),nw=l.filter(f=>!seen.has(f.postscriptName));SYS.n=l.length;
+if(nw.length){const add=await sysAdd(nw,seen);sysSave(seen);fontUI();if(POP)fpList();toast(add?`${add} newly installed font${add>1?'s':''} added`:`${nw.length} new font file${nw.length>1?'s':''} (already in library)`)}else if(manual)toast('No new installed fonts');SYS.t=Date.now()}
+catch(e){if(manual)toast('Couldn’t read installed fonts')}finally{SYS.busy=0;sysUI()}}
+async function sysImport(){const q=await ask('Import installed fonts',{msg:'Type part of a font name (e.g. “Noto Sans JP”, “Mincho”, “Gothic”). All installed fonts containing that text are imported.',val:'',ok:'Import'});if(!q||!q.trim())return;
+try{const l=await queryLocalFonts(),k=q.trim().toLowerCase(),m=l.filter(f=>(f.family+' '+f.fullName+' '+f.postscriptName).toLowerCase().includes(k));if(!m.length){toast('No installed font matches “'+q.trim()+'”');return}
+if(m.length>40&&!await ask('Import '+m.length+' fonts?',{msg:'That is a lot — it may be slow and use storage. Narrow the name if unsure.',ok:'Import all'}))return;
+SYS.busy=1;sysUI();const seen=sysSeen(),add=await sysAdd(m,seen);sysSave(seen);fontUI();if(POP)fpList();toast(`${add} font${add==1?'':'s'} imported`)}catch(e){toast('Permission to read installed fonts was declined')}finally{SYS.busy=0;sysUI()}}
+(async()=>{const bx=document.createElement('div');bx.id='lksys';bx.className='w';$('#lkwin').after(bx);sysUI();if(SYS.on)sysScan(0);
+const tk=()=>{if(!document.hidden&&SYS.on&&Date.now()-SYS.t>6000)sysScan(0)};setInterval(tk,4000);document.addEventListener('visibilitychange',tk);window.addEventListener('focus',tk)})();
+
 // smooth accordion + slider fill
 $$('#ctl summary').forEach(s=>s.addEventListener('click',e=>{e.preventDefault();const d=s.parentNode,g=d.querySelector('.g');if(!g||d.dataset.a)return;d.dataset.a=1;g.style.overflow='hidden';
 const o={duration:420,easing:'cubic-bezier(.32,.72,0,1)'},z={height:'0px',opacity:0,paddingTop:'0px',paddingBottom:'0px'};
