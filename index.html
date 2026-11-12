@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Dial Studio V4.9.8</title>
+<title>Dial Studio V4.9.9</title>
 <meta name="theme-color" content="#000000"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dial Studio">
 <link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <script>
@@ -1093,10 +1093,13 @@ itemsUI();
 function thumbBg(t){if(!BG.img||!BG.on)return t;try{if(BG._s!==BG.img){BG._s=BG.img;const p=BG.img.split(','),m=/:(.*?);/.exec(p[0])[1],b=atob(p[1]),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);if(BG._u)URL.revokeObjectURL(BG._u);BG._u=URL.createObjectURL(new Blob([u],{type:m}))}const o=BG.img;BG.img=BG._u;try{return withBg(t)}finally{BG.img=o}}catch(e){return t}}
 (()=>{let last='';setInterval(()=>{const j=JSON.stringify(BG);if(j===last)return;const first=!last;last=j;try{localStorage.setItem('dialstudio.bg',j)}catch(e){}if(!first&&typeof paint=='function'&&PRJ){TH={};paint()}},1200);$('#bgon').checked=BG.on!==false})();
 $('#cpe').onclick=async()=>{const t=clipSvg(svgText.replace(/<rect id="canvas-bg"[^>]*\/>/,'').replace(/<g id="dial">.*?<\/g>/g,''),true),ok=await copyText(t),b=$('#cpe');b.textContent=ok?'Copied':'Copy blocked';setTimeout(()=>b.textContent='Copy elements',1600)};
+// true bounds (mm) of what "Copy elements" pastes: geometry only, and with stroke widths included (Affinity shows one of the two)
+function elBounds(){const t=svgText.replace(/<rect id="canvas-bg"[^>]*\/>/,'').replace(/<g id="dial">.*?<\/g>/g,''),d=document.createElement('div');d.style.cssText='position:fixed;left:-9999px;top:0;width:800px;height:800px;visibility:hidden';d.innerHTML=t;document.body.append(d);
+try{const sv=d.querySelector('svg');sv.setAttribute('width','800');sv.setAttribute('height','800');const b=sv.getBBox();let sw=0;sv.querySelectorAll('[stroke]').forEach(e=>{if(e.getAttribute('stroke')!='none')sw=Math.max(sw,+e.getAttribute('stroke-width')||0)});return{w:b.width,h:b.height,sw}}catch(e){return null}finally{d.remove()}}
 // one-time calibration of copy size for the paste target (Affinity scales pasted SVG by its own document settings)
 (()=>{const b=document.createElement('button');b.id='cpcal';b.textContent='Calibrate copy';b.title='Fix the pasted size for Affinity';$('#cpe').after(b);
-b.onclick=async()=>{const m=svgText.match(/^<svg[^>]*\swidth="([0-9.]+)mm"/),E=m?+m[1]:0;
-const r=await ask('Calibrate copy size',{msg:`1) Click <b>Copy elements</b> and paste into Affinity.<br>2) Select the pasted group and read its <b>W</b> in mm. It should be <b>${E} mm</b>.<br>3) Type what Affinity shows below (just the number, mm), then Apply. Then copy again and paste — it will be exact. Type <b>reset</b> to clear the correction. Current correction: ×${+cpk().toFixed(5)}`,val:'',ok:'Apply'});
+b.onclick=async()=>{const bb=elBounds(),E=bb?+(bb.w+bb.sw).toFixed(3):0,G=bb?bb.w:0,fm=x=>(+x.toFixed(2));
+const r=await ask('Calibrate copy size',{msg:`1) Click <b>Copy elements</b> and paste into Affinity.<br>2) Select the pasted group and read its <b>W</b> in mm. Expected: <b>${bb?fm(E):'?'} mm wide</b> (${bb?fm(G):'?'} mm geometry-only, ${bb?fm(bb.h+bb.sw):'?'} mm tall incl. strokes). Affinity shows one of the two widths, depending on its stroke-bounds setting; the width and height can legitimately differ if the artwork has gaps at 3 and 9 o’clock.<br>3) Type what Affinity shows below (just the number, mm), then Apply. Then copy again and paste — it will be exact. Type <b>reset</b> to clear the correction. Current correction: ×${+cpk().toFixed(5)}`,val:'',ok:'Apply'});
 if(!r||!r.trim())return;if(/^reset$/i.test(r.trim())){try{localStorage.removeItem('dialstudio.cpk')}catch(e){}toast('Copy correction cleared');return}
 const W=parseFloat(r.replace(',','.'));if(!(W>0)||!(E>0)){toast('Enter the width Affinity shows, e.g. 13.4');return}
 const k=cpk()*E/W;try{localStorage.setItem('dialstudio.cpk',String(k))}catch(e){}toast(`Copy corrected ×${+(E/W).toFixed(4)} — copy again and paste`)}})();
