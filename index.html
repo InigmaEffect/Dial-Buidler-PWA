@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Dial Studio V4.9.1</title>
+<title>Dial Studio V4.9.3</title>
 <meta name="theme-color" content="#000000"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dial Studio">
 <link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <script>
@@ -159,8 +159,12 @@ dialog.cal{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;border:0}
 #gd{position:absolute;inset:0;pointer-events:none;z-index:2}html body #stage #gd svg{background:transparent!important;width:100%;height:100%;display:block}
 #zb .vk.on{background:#ff2d3a!important;border-color:#ff2d3a!important;color:#fff!important}
 #pvb{display:none;position:absolute;left:8px;right:8px;bottom:8px;z-index:7;gap:6px;align-items:center;background:rgba(0,0,0,.78);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding:6px;border-radius:12px;color:#fff;font-size:12px}#pvb span{flex:1;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#pvb button{min-width:34px;height:32px;padding:0 10px}
-#stage.pvw #pvb{display:flex}#stage.pvw #gz,#stage.pvw #zb .vk.on{background:#ff2d3a!important;border-color:#ff2d3a!important;color:#fff!important}
+#stage.pvw #pvb{display:flex}#stage.pvw #gz{display:none!important}
 .cpn{display:flex;gap:6px;margin-left:auto}.cp.pvw{outline:2px solid #ff2d3a;outline-offset:1px}
+html body #zb{flex-wrap:wrap;row-gap:6px;column-gap:4px;justify-content:center;max-width:100%}
+html body #zb>button{flex:1 1 30px;min-width:30px;max-width:44px;padding:0}
+html body #zb>.vk{font-size:15px}
+#pva{position:absolute;inset:0;z-index:6;pointer-events:none;display:flex;align-items:center;justify-content:space-between;padding:0 4px}#pva[hidden]{display:none}#pva button{pointer-events:auto;width:30px;height:54px;padding:0;border-radius:12px;background:rgba(0,0,0,.55);color:#fff;border:1px solid rgba(255,255,255,.25);font-size:22px;line-height:1;opacity:.85;cursor:pointer}#pva button:active{background:#ff2d3a;border-color:#ff2d3a}#stage.pvw #pva{display:none}
 </style><style id="ui2">:root:root:root:root{--bg:#000;--pn:#000;--fg:#e4e4e4;--mut:#858585;--ln:#2a2a2a;--acc:#e5141c;--hv:#1a1a1a;--gl:#0a0a0a;--sh:none;--mh:262px;color-scheme:dark}
 html,body{background:#000!important;height:100%}
 body{font:12px/1.35 'Segoe UI',system-ui,-apple-system,Roboto,sans-serif!important;letter-spacing:0!important;overflow:hidden;display:flex!important;flex-direction:column}
@@ -481,7 +485,7 @@ html body.mob #side details.act:not(.lst)>.g>label:not(.b){min-height:74px!impor
 html body.mob #side details.act:not(.lst)>.g>label.b{min-height:40px!important}
 html body.mob #side .g>.m,html body.mob #side .g>.w.m{padding:0 2px!important}
 html body.mob #ited{padding:4px 0 8px!important}
-</style><meta name="theme-color" content="#000000"></head><body><header class="top">
+</style><style id="ui6">html body #ctl label.nmw{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:4px!important;grid-column:1/-1!important;height:auto!important;max-height:none!important;overflow:visible!important}html body #ctl label.nmw>span{white-space:normal!important;width:auto!important}html body #ctl label.nmw textarea{width:100%!important;display:block}html body #ctl .nmg{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(64px,1fr))!important}#ctl textarea{width:100%;box-sizing:border-box;background:var(--gl,#111);color:var(--fg,#eee);border:1px solid var(--ln,#333);border-radius:6px;padding:6px 8px;font:inherit;resize:vertical;min-height:44px}#ctl .nmh{display:block;color:var(--mut,#888);font-size:11px;line-height:1.4;margin:4px 0 6px}#ctl .nmg{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:4px;margin:4px 0}#ctl .nmg label{display:flex;flex-direction:column;gap:1px;margin:0;padding:0}#ctl .nmg small{font-size:9px;color:var(--mut,#888)}#ctl .nmg input{width:100%;box-sizing:border-box;padding:4px 5px;min-width:0}#ctl .nmb{margin-top:4px;background:none;color:var(--mut,#888);border:1px solid var(--ln,#333);border-radius:6px;padding:4px 10px;cursor:pointer;font:inherit;font-size:12px}</style><meta name="theme-color" content="#000000"></head><body><header class="top">
 <div class="brand"><i></i>Dial Studio V4.6</div>
 <div class="grp"><b>Dial</b><select id="dsel" aria-label="Dial"></select><button class="ic" id="dnew" title="New dial" aria-label="New dial">+</button><button class="ic" id="dm" title="Dial options" aria-label="Dial options">⋯</button></div>
 <div class="grp"><b>Version</b><div class="tabs" id="vtabs"></div><button class="ic" id="vnew" title="New version" aria-label="New version">+</button><button class="ic" id="vm" title="Version options" aria-label="Version options">⋯</button></div>
@@ -518,7 +522,7 @@ const setStage=t=>{const s=document.getElementById('stage'),o=s.querySelector(':
 const objF=(p,nm,w,l,sc,dw,dl,ds)=>[[p+'shape',nm+' shape','sel',ds,SHP_],[w,nm+' width','l',dw],[l,nm+' length','l',dl],[sc,nm+' scale','n',1],[p+'rot',nm+' rotation','a',0],[p+'off',nm+' radial offset','l',0],[p+'file',nm+' custom SVG','file']];
 const F=[['Dial',[['style','Style','sel','Numbers',STY],['dia','Dial diameter','l',32],['ring','Index ring radius','l',12],['count','Count','n',12],['hole','Centre hole Ø','l',1.5],['pad','Page padding','l',3],['ink','Line colour','c','#1c1c1c'],['lw','Line weight','l',0.12],['fill','Fill shapes & glyphs','b',true],['fmM','Objects: fill / outline','sel','Auto',FM_],['fmN','Numerals: fill / outline','sel','Auto',FM_],['fmT','Text fill / outline','sel','Auto',FM_]]],
 ['Position & canvas',[['lx','Move layer X','l',0],['ly','Move layer Y','l',0],['lrot','Rotate layer','a',0],['lsc','Scale layer','n',1],['dcirc','Draw dial circle & hole','b',true],['cw','Canvas width (0 = auto)','l',0],['ch','Canvas height (0 = auto)','l',0],['bgc','Canvas colour','c','#000000'],['bga','Auto-contrast line colour','b',true]]],
-['Numerals',[['hsize','Hour text size','l',2.8],['noff','Numerals radial offset','l',0],['msize','Minute text size','l',2],['sx','Scale X','n',1],['sy','Scale Y','n',1],['msx','Minute scale X','n',1],['msy','Minute scale Y','n',1],['skx','Skew X','a',0],['sky','Skew Y','a',0],['trot','Text rotation','a',0],['spacing','Letter spacing','n',1],['weight','Font weight','n',0.09],['wart','Artificial weight (thicken outlines instead)','b',false],['qts','Quarter text scale','n',1.6],['split','Split hour numerals (1|2)','b',false],['hgap','Hour split gap','l',0.4],['showMin','Show minute numbers','b',false],['alignText','Align text to edge','b',false],['invert','Invert lower half text','b',false],['flip6','Flip the 6 upright (so it isn’t a 9)','b',false],['iiii','Roman IIII','b',false]]],
+['Numerals',[['hsize','Hour text size','l',2.8],['noff','Numerals radial offset','l',0],['msize','Minute text size','l',2],['sx','Scale X','n',1],['sy','Scale Y','n',1],['msx','Minute scale X','n',1],['msy','Minute scale Y','n',1],['skx','Skew X','a',0],['sky','Skew Y','a',0],['trot','Text rotation','a',0],['spacing','Letter spacing','n',1],['weight','Font weight','n',0.09],['wart','Artificial weight (thicken outlines instead)','b',false],['qts','Quarter text scale','n',1.6],['split','Split hour numerals (1|2)','b',false],['hgap','Hour split gap','l',0.4],['showMin','Show minute numbers','b',false],['alignText','Align text to edge','b',false],['invert','Invert lower half text','b',false],['flip6','Flip the 6 upright (so it isn’t a 9)','b',false],['iiii','Roman IIII','b',false],['nmap','Custom numerals — paste a list','nmap',''],['nsep','Split pasted list by','sel','Auto',['Auto','Each character','Custom']],['nsepc','Custom separator','s','']]],
 ['Markers / objects',[['alignObj','Align objects to edge','b',true],['objRot','Object rotation (all)','a',0],['tipw','Triangle tip width (0 = point)','l',0],['tipx','Triangle tip offset','l',0],['dbgap','Double bar gap','l',0.4],['dbtap','Double bar taper','n',0.4],['dbside','Double bar taper edges','sel','Both',['Both','Outer edge','Inner edge']],['well','Lume wells (inset)','b',false],['wellIn','Well inset','l',0.25],...objF('m','Marker','mw','ml','mScale',0.8,3,'Bar'),...objF('tr','Triangle','tw','th','triScale',3,3,'Triangle'),...objF('q','Quarter','qw','ql','qScale',1.6,4,'Bar')]],
 ['Subdivisions',[['minCount','Subdivision count','n',60],...objF('mn','Subdivision','mmw','mml','minScale',0.25,1.2,'Bar'),['splitMin','Split minute numerals','b',false],['mgap','Minute split gap','l',0.4],['mratio','Minute numeral ratio','n',1],['flr','Flieger inner ratio','n',0.7]]],
 ['Cartouche brackets (12 positions)',[['tshow','Show brackets','b',true],['trkH','Track height','l',2.6],['trkT','Track thickness','l',0.25],['tpad','Track padding','l',0.5],['tres','Track resolution','n',24],['alMin','Align minute edge','b',true],['moff','Minute radial offset','l',0],['hoff','Hour radial offset','l',0],['tman','Manual gap','b',false],['tgap','Manual gap angle','a',11.5]]],
@@ -592,6 +596,21 @@ else if(sh=='Circle')cm=poly(Array.from({length:32},(_,i)=>[Math.cos(i*TAU/32)*w
 else if(sh=='Custom SVG'&&SHPC[p])cm=mp(SHPC[p],(x,y)=>[x*w,y*l]);
 else cm=poly([[-w/2,-l/2],[w/2,-l/2],[w/2,l/2],[-w/2,l/2]]);
 const r=S[p+'rot'],c=Math.cos(r),s=Math.sin(r),o=S[p+'off'];return mp(cm,(x,y)=>[x*c-y*s,x*s+y*c+o])}
+// ---- custom numerals: paste a list (any language/symbols) -> assigned to 1,2,3… ; per-index overrides on top
+const NM={grid:null,sig:''};
+function nmTok(){const t=S.nmap||'';if(!t.trim())return[];
+if(S.nsep=='Each character')return[...t.replace(/\s+/g,'')];
+if(S.nsep=='Custom'&&S.nsepc)return t.split(S.nsepc).map(x=>x.trim());
+return t.split(/[\s　・･·•,，、;；|\/]+/).filter(Boolean)}
+function nmOv(){try{const o=JSON.parse(S.nov||'{}');return o&&typeof o=='object'?o:{}}catch(e){return{}}}
+// custom label for numeral n (1-based), or null to keep the normal numeral
+function cust(n){const ov=nmOv();if(n in ov)return ov[n]||null;return nmTok()[n-1]||null}
+function nmGrid(){const g=NM.grid;if(!g)return;const tk=nmTok(),M=Math.min(60,Math.max(S.count|0,tk.length,1)),sig=M+'\u0001'+tk.join('\u0002')+'\u0001'+(S.nov||'');if(sig==NM.sig)return;
+if(g.contains(document.activeElement)&&NM.sig){return}
+NM.sig=sig;const ov=nmOv();g.innerHTML='';
+for(let n=1;n<=M;n++){const c=document.createElement('label'),i=document.createElement('input');i.type='text';i.placeholder=String(n);i.value=n in ov?ov[n]:(tk[n-1]||'');
+c.append(Object.assign(document.createElement('small'),{textContent:n}),i);
+i.oninput=()=>{const o=nmOv(),t=nmTok()[n-1]||'';if(i.value===t)delete o[n];else o[n]=i.value;S.nov=Object.keys(o).length?JSON.stringify(o):'';NM.sig=M+'\u0001'+nmTok().join('\u0002')+'\u0001'+(S.nov||'');sched()};g.append(c)}}
 let svgText='';
 function build1(){
 const N=Math.max(1,S.count|0),R=S.ring,A=S.alignText?1:0,AO=S.alignObj?1:0,sg=S.revSp?-1:1,out=[],um=S.showMin?1:0;
@@ -622,9 +641,10 @@ const lbl=(isM,str,x,y,rot,s,rm)=>{const f=isM?fM():fH(),sz=isM?S.msize:S.hsize;
 const o=isM?{sx:S.msx,sy:S.msy,split:S.splitMin,gap:S.mgap}:{sx:S.sx,sy:S.sy,split:S.split&&!rm,gap:S.hgap};
 out.push(['n',pl(lab(f,str,sz,{...o,rot:S.trot,kx:S.skx,ky:S.sky,sp:S.spacing}),x,y,rot,s),f.stroke?sz*S.weight:0,f.stroke||(f.real&&!S.wart)?0:Math.max(0,S.weight-.09)*sz])};
 const pad=j=>String(j).padStart(2,'0');
-const pick=(i,mul,off)=>{const r0=i*mul+off,j=(((r0%60)+60)%60);return um?pad(j+1):String(Math.round(r0)+1)};
-const nums=(r,sel,x2,sc)=>ring(N,r+S.noff,T(sel),(i,k,x,y,rot)=>{const p=pick(i,mulD,offD+(x2||0));lbl(um,p,x,y,rot+(S.flip6&&S.alignText&&!S.invert&&p==='6'?PI:0),sc||1)});
-const roman=sel=>ring(N,R+S.noff,T(sel),(i,k,x,y,rot)=>{let s=rom(i+1);if(S.iiii)s=s.replace('IV','IIII');lbl(0,s,x,y,rot,1,1)});
+const numOf=(i,mul,off)=>{const r0=i*mul+off,j=(((r0%60)+60)%60);return um?j+1:Math.round(r0)+1};
+const pick=(i,mul,off)=>{const n=numOf(i,mul,off);return um?pad(n):String(n)};
+const nums=(r,sel,x2,sc)=>ring(N,r+S.noff,T(sel),(i,k,x,y,rot)=>{const n=numOf(i,mulD,offD+(x2||0)),c=cust(n),p=c??pick(i,mulD,offD+(x2||0));lbl(um,p,x,y,rot+(S.flip6&&S.alignText&&!S.invert&&p==='6'?PI:0),sc||1,c!=null)});
+const roman=sel=>ring(N,R+S.noff,T(sel),(i,k,x,y,rot)=>{const c=cust(i+1);let s=c??rom(i+1);if(c==null&&S.iiii)s=s.replace('IV','IIII');lbl(0,s,x,y,rot,1,1)});
 const mk=sel=>ring(N,R,O(sel),(i,k,x,y,rot)=>obj('m',x,y,rot));
 const tk=sel=>ring(N,R,O(sel),(i,k,x,y,rot)=>obj('tr',x,y,rot));
 const qk=sel=>ring(N,R,O(sel),(i,k,x,y,rot)=>obj('q',x,y,rot));
@@ -642,7 +662,7 @@ case'KonTiki':tk(q4);mk(nq4);break;
 case'California':roman(sq([1,2,10,11]));nums(R,sq([3,4,5,7,8,9]));tk(sq([0]));qk(sq([6]));break;
 case'Minute Numerals':{mk();mins();const m60=60/N;
 ring(N,R*S.mratio+S.noff,T(),(i,k,x,y,rot)=>lbl(1,pad((((i*m60+m60-1)%60)+60)%60+1),x,y,rot,1));
-ring(N,R*S.flr+S.noff,T((k)=>k%2==0),(i,k,x,y,rot)=>lbl(0,String(i+1),x,y,rot,1));break}
+ring(N,R*S.flr+S.noff,T((k)=>k%2==0),(i,k,x,y,rot)=>lbl(0,cust(i+1)??String(i+1),x,y,rot,1,cust(i+1)!=null));break}
 case'Cartouche':cart()}
 // Custom text is now managed as independent text items on layers.
 const W=S.dia+2*S.pad,h=W/2,f3=v=>+v.toFixed(3),ink=effInk(),lw=f3(S.lw);
@@ -654,7 +674,7 @@ for(const o of it){const strokeGlyph=o[2]>0;
 g+=`<path d="${o[1]}" ${strokeGlyph?`fill="none" stroke="${ink}" stroke-width="${f3(o[2])}" stroke-linecap="round" stroke-linejoin="round"`:fillOf(id)?`fill="${ink}" fill-rule="${id=='m'?'evenodd':'nonzero'}" ${o[3]>0?`stroke="${ink}" stroke-width="${f3(o[3])}" stroke-linejoin="round"`:'stroke="none"'}`:`fill="none" ${st}`}/>`}
 g+='</g>'}
 return `<svg xmlns="http://www.w3.org/2000/svg" width="${f3(W)}mm" height="${f3(W)}mm" viewBox="${f3(-h)} ${f3(-h)} ${f3(W)} ${f3(W)}">${g}</svg>`}
-function render(){try{svgText=build();onChange();setStage(withBg(svgText.replace(/width="[^"]*mm" height="[^"]*mm"/,'')));applyZ();
+function render(){try{nmGrid();svgText=build();onChange();setStage(withBg(svgText.replace(/width="[^"]*mm" height="[^"]*mm"/,'')));applyZ();
 const mm=svgText.match(/width=.([0-9.]+)mm. height=.([0-9.]+)mm/),W=mm?+mm[1]:(S.dia+2*S.pad),H=mm?+mm[2]:W;$('#info').textContent=`Page ${(W/U.v).toFixed(2)} × ${(H/U.v).toFixed(2)} ${U.v==1?'mm':'cm'} · dial Ø ${(S.dia/U.v).toFixed(2)}${lyTag()}`}
 catch(e){$('#info').textContent='Check your values: '+e.message}}
 let tm;const sched=()=>{cancelAnimationFrame(tm);tm=requestAnimationFrame(render)};
@@ -695,6 +715,9 @@ function mkField(f){const[id,lab,ty,def,opt]=f;const L=document.createElement('l
 if(ty=='hide'){L.className='w';L.innerHTML='<span>Hide hour positions</span>';const d=document.createElement('div');d.className='hs';
 [12,1,2,3,4,5,6,7,8,9,10,11].forEach(n=>{const c=document.createElement('label');c.className='b';const i=document.createElement('input');i.type='checkbox';i.onchange=()=>{S['h'+n%12]=i.checked;sched()};HB[n%12]=i;c.append(i,n);d.append(c)});L.append(d);return L}
 if(ty=='b'){L.className='b';const i=document.createElement('input');i.type='checkbox';S[id]=def;i.checked=def;i.onchange=()=>{S[id]=i.checked;sched()};EL[id]=i;L.append(i,lab);return L}
+if(ty=='nmap'){L.className='w nmw';S.nmap='';S.nov='';const sp=document.createElement('span');sp.textContent=lab;const ta=document.createElement('textarea');ta.rows=2;ta.spellcheck=false;ta.placeholder='イチ ニ サン シ ゴ …  (any words, letters or symbols)';ta.oninput=()=>{S.nmap=ta.value;sched()};EL.nmap=ta;
+const h=document.createElement('small');h.className='nmh';h.textContent='Item 1 → numeral 1, item 2 → numeral 2… Edit any box below to override that position. Non-Latin text needs a font that has those glyphs (upload one under Units & fonts).';
+const gr=document.createElement('div');gr.className='nmg';NM.grid=gr;const b=document.createElement('button');b.type='button';b.className='nmb';b.textContent='Clear custom numerals';b.onclick=()=>{S.nmap='';S.nov='';ta.value='';NM.sig='';sched()};L.append(sp,ta,h,gr,b);return L}
 const span=document.createElement('span');span.textContent=lab;let i;
 if(ty=='sel'){i=document.createElement('select');opt.forEach(o=>i.add(new Option(o)));i.value=def;S[id]=def;i.onchange=()=>{S[id]=i.value;sched()}}
 else if(ty=='s'||ty=='c'){i=document.createElement('input');i.type=ty=='s'?'text':'color';i.value=def;S[id]=def;i.oninput=()=>{S[id]=i.value;sched()}}
@@ -1225,7 +1248,7 @@ if(VW.g&&VW.ru){const cand=[.1,.2,.5,1,2,5,10,20,50,100],lab=cand.find(c=>c*un*p
 if(MS&&MS.b){const[ax,ay]=u2(MS.a[0],MS.a[1]),[bx,by]=u2(MS.b[0],MS.b[1]),dx=(MS.b[0]-MS.a[0])/un,dy=-(MS.b[1]-MS.a[1])/un,d=Math.hypot(dx,dy),an=(Math.atan2(dx,dy)*180/Math.PI+360)%360;
  o+=ln(ax,ay,bx,by,'#ffd60a',1.5)+`<circle cx="${f(ax)}" cy="${f(ay)}" r="4" fill="#ffd60a"/><circle cx="${f(bx)}" cy="${f(by)}" r="4" fill="#ffd60a"/><rect x="${f((ax+bx)/2-62)}" y="${f((ay+by)/2-26)}" width="124" height="22" rx="6" fill="rgba(0,0,0,.8)"/><text x="${f((ax+bx)/2)}" y="${f((ay+by)/2-11)}" text-anchor="middle" font-size="11" fill="#ffd60a" ${FF}>${d.toFixed(2)} ${un==10?'cm':'mm'} · ${an.toFixed(0)}°</text>`}
 gdv.innerHTML=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${o}</svg>`;
-$$('.vk').forEach(t=>t.classList.toggle('on',!!VW[t.dataset.vk]))}
+$$('.vk').forEach(t=>t.classList.toggle('on',!!VW[t.dataset.vk]));const pa=$('#pva');if(pa)pa.hidden=!(VV().cps&&VV().cps.length)}
 {const _az=applyZ;applyZ=function(){_az();ovDraw()};}
 addEventListener('resize',()=>ovDraw());
 // measure tool (captured before the stage pans)
@@ -1291,11 +1314,12 @@ menu(a,[['Load into this version',()=>tplLoad(t)],['Load as new version',()=>tpl
 // ---- checkpoint preview: ‹ › step through the timeline without touching your work
 let PVI=null;
 const pvb=document.createElement('div');pvb.id='pvb';pvb.innerHTML='<button type="button" id="pvp" aria-label="Previous">‹</button><span id="pvt"></span><button type="button" id="pvn" aria-label="Next">›</button><button type="button" id="pvr" class="p">Restore</button><button type="button" id="pvx">Exit</button>';stg.append(pvb);pvb.addEventListener('pointerdown',e=>e.stopPropagation());
+const pva=document.createElement('div');pva.id='pva';pva.innerHTML='<button type="button" id="pvl" aria-label="Previous checkpoint" title="Previous checkpoint">‹</button><button type="button" id="pvg" aria-label="Next checkpoint" title="Next checkpoint">›</button>';stg.append(pva);pva.addEventListener('pointerdown',e=>e.stopPropagation());$('#pvl').onclick=()=>cpStep(-1);$('#pvg').onclick=()=>cpStep(1);
 {const _r=render;render=function(){if(PVI!=null){PVI=null;stg.classList.remove('pvw');$$('#cps .cp').forEach(x=>x.classList.remove('pvw'))}_r()}}
 function cpStep(d){const v=VV(),L=v.cps;if(!L.length)return toast('Save a checkpoint first');
 let pos=PVI!=null?PVI:(()=>{const b=L.findIndex(c=>c.id==v.base);return b>=0&&same(v.work,L[b].sn)?b:L.length})();pos+=d;if(pos<0)pos=0;if(pos>=L.length)return cpExit();PVI=pos;cpShow()}
 function cpShow(){const v=VV(),c=v.cps[PVI];if(!c)return cpExit();stg.classList.add('pvw');setStage(thumb(c.sn));applyZ();$('#pvt').textContent=`${PVI+1} / ${v.cps.length} · ${c.name}`;$('#info').textContent='Previewing checkpoint — your work is untouched';$$('#cps .cp').forEach(x=>x.classList.toggle('pvw',x.dataset.c==c.id));const el=$('#cps .cp.pvw');if(el&&el.scrollIntoView)el.scrollIntoView({inline:'center',block:'nearest'})}
-function cpExit(){if(PVI==null)return;PVI=null;render()}
+function cpExit(){if(PVI==null)return;PVI=null;stg.classList.remove('pvw');$$('#cps .cp').forEach(x=>x.classList.remove('pvw'));render()}
 $('#cpl').onclick=()=>cpStep(-1);$('#cpr').onclick=()=>cpStep(1);$('#pvp').onclick=()=>cpStep(-1);$('#pvn').onclick=()=>cpStep(1);$('#pvx').onclick=cpExit;
 $('#pvr').onclick=()=>{const c=VV().cps[PVI];const el=c&&$('#cps').querySelector(`.cp[data-c="${c.id}"]`);if(el)el.click()};
 addEventListener('keydown',e=>{if(PVI==null||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(e.key=='ArrowLeft'||e.key=='ArrowRight'){e.preventDefault();cpStep(e.key=='ArrowRight'?1:-1)}else if(e.key=='Escape')cpExit()});
@@ -1326,7 +1350,7 @@ const OG=(gt,id)=>{if(gt=='Markers / objects'){if(/^m(shape|w|l|Scale|rot|off|fi
 if(gt=='Subdivisions'&&/^(mnshape|mnrot|mnoff|mnfile|mmw|mml|minScale|minCount)$/.test(id))return'k';return''};
 function rel(gt,id){const f=SU[S.style]??'',h=c=>f.includes(c),any=x=>[...'mtqk'].some(c=>h(c)&&x(c)),obj=any(()=>1),mu=h('n')&&(S.showMin||h('u'));
 if(gt=='Dial'){if(id=='count')return f!==''&&!h('c');if(id=='ring')return f!=='';if(id=='fmM')return obj||h('c');if(id=='fmN')return h('n');if(id=='fmT')return ITM.some(i=>i.k=='text');return true}
-if(gt=='Numerals'){if(!h('n'))return false;if(['msize','msx','msy'].includes(id))return mu;if(id=='qts')return h('P');if(id=='split')return!/Roman|Cartouche/.test(S.style);if(id=='hgap')return!!S.split&&!/Roman|Cartouche/.test(S.style);if(id=='iiii')return/Roman|California|Cartouche/.test(S.style);if(id=='showMin')return!h('u');if(id=='invert'||id=='flip6')return!!S.alignText;if(id=='weight')return true;return true}
+if(gt=='Numerals'){if(!h('n'))return false;if(['msize','msx','msy'].includes(id))return mu;if(id=='qts')return h('P');if(id=='split')return!/Roman|Cartouche/.test(S.style);if(id=='hgap')return!!S.split&&!/Roman|Cartouche/.test(S.style);if(id=='iiii')return/Roman|California|Cartouche/.test(S.style);if(id=='showMin')return!h('u');if(id=='invert'||id=='flip6')return!!S.alignText;if(id=='nsepc')return S.nsep=='Custom';if(id=='weight')return true;return true}
 if(gt=='Markers / objects'){const o=OG(gt,id);if(o){if(!h(o))return false;if(id==FILK[o])return S[SHK[o]]=='Custom SVG';return true}
 if(id=='alignObj'||id=='objRot'||id=='well')return obj;if(id=='wellIn')return obj&&!!S.well;if(id=='tipw'||id=='tipx')return any(c=>S[SHK[c]]=='Triangle');if(id=='dbgap'||id=='dbtap'||id=='dbside')return any(c=>S[SHK[c]]=='Double Bar');return true}
 if(gt=='Subdivisions'){const o=OG(gt,id);if(o){if(!h('k'))return false;if(id==FILK.k)return S.mnshape=='Custom SVG';return true}
